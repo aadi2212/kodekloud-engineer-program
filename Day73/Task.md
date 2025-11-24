@@ -1,94 +1,99 @@
-OneNote Documentation: Jenkins Scheduled Job – copy-logs
-📌 Task Objective
+# 📄 Jenkins Job Documentation — `copy-logs`
 
-Configure a Jenkins scheduled job to automatically collect Apache logs from App Server 1 every 2 minutes and store them on the Storage Server at:
+Automated Apache log collection job for **xFusionCorp Industries**.
+
+---
+
+## 📌 Task Objective
+
+Set up a Jenkins job to:
+
+- Fetch **Apache access_log** and **error_log** from **App Server 1**
+- Transfer them to the **Storage Server** at:
 
 /usr/src/data
 
 
-This temporary setup helps the DevOps team analyze Apache issues until centralized logging is fully implemented.
+- Run this process **every 2 minutes**
+- Ensure job runs without manual intervention
 
-1️⃣ Login to Jenkins
+---
 
-Username: admin
+## 🚀 1. Login to Jenkins
 
-Password: Adm!n321
+Open Jenkins UI and login:
 
-Go to the Jenkins dashboard using the top navigation bar.
+- **Username:** admin  
+- **Password:** Adm!n321  
 
-2️⃣ Install Required Plugin
+---
 
-Jenkins needs SSH-based file transfer support.
+## 🔧 2. Install Required Plugin
 
-🔌 Plugin Required: Publish Over SSH
-Steps:
+Navigate:
 
 Manage Jenkins → Plugins → Available
 
-Search: Publish Over SSH
 
-Install plugin
+Install:
 
-Click Restart Jenkins when installation is complete
+- **Publish Over SSH**
 
-Refresh UI (UI may freeze during restart)
+After installation:
+- ✔ Restart Jenkins
+- ✔ Refresh UI if it becomes unresponsive
 
-3️⃣ Configure Storage Server (Publish Over SSH)
-Navigation:
+---
+
+## 🖥 3. Configure Storage Server in Jenkins
+
+Navigate:
 
 Manage Jenkins → Configure System → Publish Over SSH
 
-SSH Server Settings
-Field	Value
-Name	StorageServer
-Hostname	(Storage Server IP / hostname)
-Username	natasha
-Password	(password)
-Remote Directory	/usr/src/data
 
-Click Test Configuration → Success
+Add SSH Server:
 
-4️⃣ Create Jenkins Job
-Navigation:
+| Field | Value |
+|-------|--------|
+| **Name** | StorageServer |
+| **Hostname** | stbkp01 (or IP) |
+| **Username** | natasha |
+| **Password** | (server password) |
+| **Remote Directory** | /usr/src/data |
 
-New Item → Freestyle Project → Name: copy-logs
+Click **Test Configuration** → Should show **Success**  
+Save.
 
-5️⃣ Build Triggers
+---
 
-Configure a periodic schedule:
+## 📝 4. Create Jenkins Job — `copy-logs`
+
+Create job:
+
+New Item → Freestyle Project → copy-logs
+
+
+Enable:
+
+### **Build periodically**
+Cron expression to run every 2 minutes:
 
 */2 * * * *
 
 
-✔ Job runs every 2 minutes
+---
 
-6️⃣ Build Step – Fetch Apache Logs from App Server 1
+## 📂 5. Build Step — Fetch Apache Logs from App Server 1
 
-Apache log location on App Server 1:
+Add step:
 
-/var/log/httpd/access_log
-/var/log/httpd/error_log
-
-❗ Issue 1: Hostname not resolved
-
-Error:
-
-ssh: Could not resolve hostname app01
+Add Build Step → Execute shell
 
 
-Fix: Used the correct IP
-172.16.238.10
+Script:
 
-❗ Issue 2: sudo requires TTY
-
-Error:
-
-sudo: a terminal is required to read the password
-
-
-Fix: Pipe password using sudo -S
-
-Working Script:
+```bash
 sshpass -p 'Ir0nM@n' ssh -o StrictHostKeyChecking=no tony@172.16.238.10 \
 "echo 'Ir0nM@n' | sudo -S cat /var/log/httpd/access_log" > access_log
 
@@ -96,63 +101,87 @@ sshpass -p 'Ir0nM@n' ssh -o StrictHostKeyChecking=no tony@172.16.238.10 \
 "echo 'Ir0nM@n' | sudo -S cat /var/log/httpd/error_log" > error_log
 
 
-✔ Logs successfully downloaded into Jenkins workspace.
+✔ Issues Fixed
 
-7️⃣ Post-build Action – Transfer Logs to Storage Server
-Navigation:
+Corrected hostname: 172.16.238.10
+
+Resolved sudo error using: sudo -S
+
+Avoided TTY requirement
+
+Saved logs into Jenkins workspace
+
+Save job.
+
+
+📤 6. Post-build Action — Transfer Logs via SSH
+
+Navigate:
 
 Post-build Actions → Send build artifacts over SSH
 
-❗ Initial Issue: Nested Folder Creation
 
-Wrong output:
+Configure:
 
-/usr/src/data/usr/src/data/access_log
-/usr/src/data/usr/src/data/error_log
+| Field                | Value                                 |
+| -------------------- | ------------------------------------- |
+| **SSH Server**       | StorageServer                         |
+| **Source files**     | access_log,error_log                  |
+| **Remove prefix**    | *(leave blank)*                       |
+| **Remote directory** | *(leave blank to use server default)* |
 
-Cause:
 
-Wrong “Source files”
-
-Misconfigured “Remote Directory”
-
-Incorrect prefix logic
-
-✔ Correct Configuration:
-Field	Value
-Source files	access_log,error_log
-Remove prefix	(Leave empty)
-Remote directory	(Leave empty — use default)
-
-Final output stored correctly in:
-
+Ensures files are stored at:
 /usr/src/data/access_log
 /usr/src/data/error_log
 
-8️⃣ Final Verification
 
-On Storage Server:
+▶️ 7. Run and Verify Job
 
+Click:
+Build Now
+
+
+Ensure:
+
+✔ Build succeeds
+
+✔ No SSH errors
+
+✔ Logs fetched correctly
+
+
+🔍 8. Validate on Storage Server
+
+SSH into Storage Server:
+
+ssh natasha@stbkp01
+
+
+Check log files:
 ls -l /usr/src/data
 
 
-Output:
-
+Expected:
 access_log
 error_log
 
 
-✔ Logs transferred
-✔ File names correct
-✔ No duplicate folders
-✔ Job runs every 2 minutes
-✔ Fully functional
+To view:
+cat /usr/src/data/access_log
+cat /usr/src/data/error_log
 
-✅ Final Status: SUCCESS
 
-All errors resolved:
+✅ Final Result
 
-✔ Hostname resolution fixed
-✔ sudo TTY issue fixed
-✔ Folder duplication fixed
-✔ Logs successfully collected & transferred
+✔ Jenkins job copy-logs created
+
+✔ Apache logs successfully fetched
+
+✔ Auto-transferred to Storage Server
+
+✔ Runs every 2 minutes
+
+✔ All issues (sudo, SSH, nesting) fixed
+
+✔ Verified logs present on Storage Server
