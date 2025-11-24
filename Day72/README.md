@@ -1,238 +1,151 @@
-Jenkins Parameterized Builds
+# 📄 Jenkins Parameterized Job Documentation — `parameterized-job`
 
+Simple parameterized build setup for testing basic Jenkins parameter functionality.
 
+---
 
-1]A new DevOps Engineer has joined the team and he will be assigned some Jenkins related tasks. Before that, the team wanted to test a simple parameterized job to understand basic functionality of parameterized builds. He is given a simple parameterized job to build in Jenkins. Please find more details below:
+## 📌 Task Objective
 
+Create a Jenkins **parameterized job** that:
 
+- Accepts user-provided parameters  
+- Runs a shell script that prints the parameter values  
+- Builds successfully using the parameter value **Staging**
 
+---
 
+## 🚀 1. Login to Jenkins
 
-Click on the Jenkins button on the top bar to access the Jenkins UI. Login using username admin and password Adm!n321.
+Open Jenkins UI and login:
 
+- **Username:** admin  
+- **Password:** Adm!n321  
 
+---
 
+## 🧱 2. Create a New Jenkins Job
 
+Navigate:
 
-1\. Create a parameterized job which should be named as parameterized-job
 
+New Item → Freestyle Project
 
 
+Enter job name:
 
 
-2\. Add a string parameter named Stage; its default value should be Build.
+parameterized-job
 
 
+Click **OK**.
 
+---
 
+## ⚙️ 3. Configure Job Parameters
 
-3\. Add a choice parameter named env; its choices should be Development, Staging and Production.
+Check:
 
 
+This project is parameterized
 
 
+### 📝 String Parameter
 
-4\. Configure job to execute a shell command, which should echo both parameter values (you are passing in the job).
+| Field | Value |
+|-------|--------|
+| **Name** | Stage |
+| **Default Value** | Build |
+| **Description** | Enter the stage name |
 
+### 🔽 Choice Parameter
 
+| Field | Value |
+|-------|--------|
+| **Name** | env |
+| **Choices** | Development<br>Staging<br>Production |
+| **Description** | Environment to build/deploy |
 
+Ensure **Staging** is spelled correctly.
 
+---
 
-5\. Build the Jenkins job at least once with choice parameter value Staging to make sure it passes.
+## 🖥 4. Add Build Step – Execute Shell
 
+Navigate:
 
-
-
-
-Note:
-
-
-
-1\. You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page i.e update centre. Also, Jenkins UI sometimes gets stuck when Jenkins service restarts in the back end. In this case, please make sure to refresh the UI page.
-
-
-
-
-
-2\. For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. You may also consider using a screen recording software such as loom.com to record and share your work.
-
-
-
-->
-
-
-
-
-
-Jenkins Parameterized Job Task Documentation:
-
-
-
-Task Objective:
-
-Create a simple parameterized Jenkins job to understand basic functionality of parameterized builds.
-
-
-
-
-
-Steps Performed:
-
-1]Access Jenkins UI
-
-Open Jenkins dashboard → login using:
-
-Username: admin
-
-Password: Adm!n321
-
-
-
-
-
-2]Create a New Job
-
-Click “New Item” → Enter job name: parameterized-job
-
-Select Freestyle project → Click OK
-
-
-
-
-
-3]Configure Job Parameters
-
-Check “This project is parameterized”
-
-
-
-String Parameter:
-
-Name: Stage
-
-Default value: Build
-
-Description: Enter the stage name
-
-
-
-Choice Parameter:
-
-&nbsp;	• Name: env
-
-&nbsp;	
-
-&nbsp;	• Choices:
-
-Development
-
-Staging
-
-Production
-
-&nbsp;	• Description: Select the environment to deploy/build
-
-
-
-
-
-
-
-4]Add Build Step
 
 Build → Add build step → Execute shell
 
 
+Add script:
 
-Command:
-
+```bash
 echo "Stage parameter value: $Stage"
-
 echo "Env parameter value: $env"
 
-&nbsp;	
+Save the job.
 
 
+▶️ 5. Build the Job
+
+Click:
+Build with Parameters
+
+Select:
+
+Stage: Build
+
+env: Staging
 
 
+Run the build.
 
-5]Build the Job
-
-Click Build with Parameters
-
-Set env = Staging and Stage = Build
-
-Verify output in Console Output
-
-
-
-
-
-Error Encountered:
-
-1]Choice Parameter Mistake:
-
-Initially wrote Stage instead of Staging in choice parameter.
-
-
-
-Error:
-
-job 'parameterized-job' choice parameter's choices are not 'Development', 'Staging' and 'Production'
-
-
-
-
-
-Resolution:
-
-Corrected the spelling to Staging.
-
-
-
-
-
-2]Job Not Found Error:
-
-Created job with name paramerized-job (typo).
-
-
-
-Error:
-
-job 'parameterized-job' not found on Jenkins
-
-
-
-
-
-Resolution:
-
-Renamed/recreated job to exact name: parameterized-job (case-sensitive, no typos).
-
-
-
-
-
-Result:
-
-• Job successfully built with parameters:
-
-
-
+Check Console Output:
 Stage parameter value: Build
-
 Env parameter value: Staging
 
 
+❗ Errors Encountered & Fixes
+
+1️⃣ Incorrect Choice Parameter Spelling
+
+Issue: Entered Stage instead of Staging in env choices.
+Fix: Corrected to exact choice values:
+
+Development
+Staging
+Production
 
 
+2️⃣ Job Name Typo
 
-Notes
-
-&nbsp;	• Always double-check job names and parameter values for case and spelling.
-
-&nbsp;	• Plugins may need installation/restart if parameters are not available.
-
+Issue: Job initially created as paramerized-job.
+Jenkins returned:
+job 'parameterized-job' not found
 
 
+Fix: Recreated job with exact name:
+parameterized-job
+
+
+✅ Final Result
+
+✔ Parameterized job created successfully
+
+✔ String & choice parameters working
+
+✔ Build executed with Staging choice
+
+✔ Output correctly displayed in console
+
+
+📌 Notes
+
+Always verify job names, parameter names, and spellings
+
+Jenkins UI may require plugin install/restart to fully enable parameter options
+
+Use screenshots/recording to document UI actions if required
+
+
+🎉 Task Completed Successfully
