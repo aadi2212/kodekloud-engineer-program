@@ -1,100 +1,59 @@
-Docker port mapping
+# Docker Port Mapping – Nginx Container Setup
+
+## Task Overview
+The Nautilus DevOps team needs to host an application using an **nginx-based container**.  
+This document outlines the steps to deploy an nginx container on **Application Server 2** with proper port mapping.
+
+---
+
+## 🚀 Steps to Complete the Task
+
+### 1. SSH into Application Server 2
+```bash
+ssh steve@172.16.238.11
+
+
+2. Pull the nginx:alpine Docker Image
+docker pull nginx:alpine
+
+This pulls a lightweight Alpine Linux–based nginx image.
 
 
 
-1]The Nautilus DevOps team is planning to host an application on a nginx-based container. There are number of tickets already been created for similar tasks. One of the tickets has been assigned to set up a nginx container on Application Server 2 in Stratos Datacenter. Please perform the task as per details mentioned below:
+3. Create and Run a Container Named games
+docker run -d --name games -p 6300:80 nginx:alpine
+
+
+Explanation:
+-d → Run container in detached mode
+
+--name games → Assigns a custom container name
+
+-p 6300:80 → Maps host port 6300 → container port 80
 
 
 
-a. Pull nginx:alpine docker image on Application Server 2.
-
-b. Create a container named games using the image you pulled.
-
-c. Map host port 6300 to container port 80. Please keep the container in running state.
+4. Verify the Running Container
+docker ps
 
 
-
-->
-
-
-
-Task: Setup Nginx Container on Application Server 2
-
-
-
-Objective:
-
-Deploy an nginx-based container for hosting an application as per Nautilus DevOps team requirements.
-
-
-
-
-
-Steps Performed:
-
-1]SSH into Application Server 2
-
-&nbsp; ssh steve@172.16.238.11
-
-
-
-2]Pull the nginx:alpine image
-
-&nbsp; docker pull nginx:alpine
-
-&nbsp; Ensures we use a lightweight version of nginx.
-
-
-
-3]Run a container named games
-
-&nbsp;docker run -d --name games -p 6300:80 nginx:alpine
-
-
-
--d → Detached mode, runs in background
-
---name games → Assigns container name
-
--p 6300:80 → Maps host port 6300 to container port 80
-
-
-
-
-
-4]Verify running container
-
-&nbsp; docker ps
-
-
-
-Output:
-
+Expected Output Example:
 CONTAINER ID   IMAGE          COMMAND                  PORTS                  NAMES
-
 <id>           nginx:alpine   "nginx -g 'daemon of…"   0.0.0.0:6300->80/tcp   games
 
 
-
-
-
-5]Test nginx page (optional)
-
+5. Test Nginx Page (Optional)
 curl http://localhost:6300
 
-Returned nginx default welcome HTML.
+You should receive the nginx default welcome HTML response.
 
 
+📝 Notes & Learning
+nginx:alpine is lightweight, ideal for quick deployments.
+
+Port mapping (-p host:container) is essential for exposing container services.
+
+Naming containers improves usability for logs, restarts, and exec commands.
 
 
-
-Learning \& Notes:
-
-1]Using nginx:alpine keeps the container lightweight and efficient.
-
-2]Port mapping (-p host:container) is crucial to make services accessible from outside.
-
-3]Naming containers (--name) helps in easier management (logs, exec, stop, restart).
-
-
-
+✔ Task Completed Successfully.
