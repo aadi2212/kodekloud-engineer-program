@@ -1,21 +1,39 @@
-Set Resource Limits in Kubernetes Pods
+# ⚙️ Set Resource Limits in Kubernetes Pods  
+### Task: Configure Resource Requests & Limits for `httpd-pod`
 
-1]The Nautilus DevOps team has noticed performance issues in some Kubernetes-hosted applications due to resource constraints. To address this, they plan to set limits on resource utilization. Here are the details:
-Create a pod named httpd-pod with a container named httpd-container. Use the httpd image with the latest tag (specify as httpd:latest). Set the following resource limits:
-Requests: Memory: 15Mi, CPU: 100m
-Limits: Memory: 20Mi, CPU: 100m
-Note: The kubectl utility on jump_host is configured to operate with the Kubernetes cluster.
+This document describes the steps taken to create a Kubernetes Pod with proper CPU and memory resource constraints to prevent performance issues caused by unbounded resource usage.
 
-->
+---
 
-Task Name: Configure Resource Limits for Kubernetes Pod
-Objective:
-The Nautilus DevOps team noticed performance issues in Kubernetes applications due to unbounded resource utilization. The goal was to create a Pod with explicit resource requests and limits to optimize cluster performance.
+## 📌 Objective
 
-Steps Performed:
-	1. Created Pod Manifest File
-		○ File name: httpd-pod.yml
-		○ Initial configuration attempt:
+The Nautilus DevOps team identified performance issues across several applications running in Kubernetes due to uncontrolled resource consumption.  
+To address this, the goal was to:
+
+- Create a Pod named **httpd-pod**
+- Use container:
+  - **Name:** `httpd-container`
+  - **Image:** `httpd:latest`
+- Apply resource constraints:
+
+| Resource Type | Memory | CPU   |
+|---------------|---------|-------|
+| **Requests**  | 15Mi    | 100m  |
+| **Limits**    | 20Mi    | 100m  |
+
+The `kubectl` utility on the jump_host is already configured for cluster access.
+
+---
+
+## 🛠️ Steps Performed
+
+---
+
+### **1. Created Pod Manifest File**
+
+Created the file **httpd-pod.yml** with the following initial configuration:
+
+```yaml
 apiVersion: v1
 Kind: Pod    # ❌ Incorrect (uppercase "K")
 metadata:
@@ -31,18 +49,27 @@ spec:
         limits:
           memory: "20Mi"
           cpu: "100m"
-		
-	2. Error Encountered
-When applying the above YAML:
+
+
+
+2. Error Encountered
+Applied the manifest:
 kubectl apply -f httpd-pod.yml
 
-Error message:
+
+Error shown:
 error: error validating "httpd-pod.yml": error validating data: kind not set;
 if you choose to ignore these errors, turn validation off with --validate=false
-		○ Root Cause: Kubernetes is case-sensitive. The field must be kind (lowercase), not Kind.
-		
-	3. Fixed the Manifest
+
+
+Root Cause
+Kubernetes fields are case-sensitive.
+The YAML used Kind instead of kind → causing validation failure.
+
+
+3. Fixed the Manifest
 Corrected YAML:
+
 apiVersion: v1
 kind: Pod
 metadata:
@@ -58,28 +85,40 @@ spec:
         limits:
           memory: "20Mi"
           cpu: "100m"
-	
-	4. Applied the Corrected Configuration
+
+
+4. Applied the Corrected Configuration
 kubectl apply -f httpd-pod.yml
-	
-	5. Verification
-		○ Checked pod creation:
+
+
+5. Verification
+Check pod status:
 kubectl get pods
-		○ Validated resource limits:
+
+
+Verify resource limits:
 kubectl describe pod httpd-pod | grep -A5 "Limits"
 
-Outcome:
-	• Pod httpd-pod was successfully created.
-	• Resource requests and limits applied correctly.
-	• Error was resolved by correcting the YAML kind field.
-	
-Benefits:
-	• Ensures the httpd container runs within controlled CPU and memory boundaries.
-	• Improves stability of other workloads in the cluster by preventing resource hogging.
-	
-Acknowledgement:
-Thanks to KodeKloud for providing practical DevOps challenges that simulate real-world issues and error troubleshooting.
-<img width="912" height="1963" alt="image" src="https://github.com/user-attachments/assets/f44eba4f-6d74-47d2-9d50-33f0547e193e" />
+
+✅ Outcome
+The httpd-pod was successfully created.
+
+CPU and memory requests and limits were applied properly.
+
+The issue was resolved by fixing the YAML kind field.
+
+
+💡 Benefits
+Prevents the container from consuming excessive CPU or memory.
+
+Protects other workloads by enforcing fair resource allocation.
+
+Improves cluster stability and performance.
+
+
+
+Acknowledgement
+Special thanks to KodeKloud for providing practical, real-world DevOps challenges that strengthen troubleshooting skills.
 
 
 
