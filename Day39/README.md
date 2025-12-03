@@ -1,78 +1,55 @@
-Create Docker Image From Container
+# Create Docker Image From Running Container
 
+## 📘 Task Overview
+A Nautilus developer made changes inside a running container and requested the DevOps team to preserve those changes by creating a new Docker image.
 
+This task is performed on **Application Server 2**.
 
-1] 
+---
 
-One of the Nautilus developer was working to test new changes on a container. He wants to keep a backup of his changes to the container. A new request has been raised for the DevOps team to create a new image from this container. Below are more details about it:
+## 🎯 Requirements
+- Source container: **ubuntu_latest**
+- Target image name: **games**
+- Target image tag: **datacenter**
+- Create image from the running container
 
+---
 
+## 🚀 Steps Performed
 
-a. Create an image games:datacenter on Application Server 2 from a container ubuntu\_latest that is running on same server.
+### 1. Verify Running Containers
+Check if the container `ubuntu_latest` is running:
 
-
-
-->
-
-
-
-📒 OneNote Documentation
-
-
-
-Task Title: Create Image from Running Container
-
-
-
-Objective:
-
-A Nautilus developer was testing changes inside a container. To preserve these changes, the DevOps team was asked to create a new image from the running container ubuntu\_latest. The new image should be tagged as games:datacenter.
-
-
-
-Steps Taken:
-
-
-
-1]Checked running containers:
-
+```bash
 docker ps
 
-Confirmed ubuntu\_latest container was running.
+Confirmed that the container ubuntu_latest is active.
 
 
+2. Create Image from Container
 
-2]Created a new image from the container:
-
-docker commit ubuntu\_latest games:datacenter
-
-This saved the container state as a new Docker image with name games and tag datacenter.
+Use docker commit to save the current state of the container:
+docker commit ubuntu_latest games:datacenter
 
 
+This command creates a new image:
+Repository: games
+Tag: datacenter
 
-3]Verified the new image:
 
+3. Verify the Newly Created Image
+List available images:
 docker images
 
-REPOSITORY   TAG          IMAGE ID       CREATED         SIZE
+Example output:
+REPOSITORY   TAG          IMAGE ID       CREATED          SIZE
+games        datacenter   ff6f25964b13   6 seconds ago    132MB
+ubuntu       latest       802541663949   3 weeks ago      78.1MB
 
-games        datacenter   ff6f25964b13   6 seconds ago   132MB
-
-ubuntu       latest       802541663949   3 weeks ago     78.1MB
-
-
-
-Confirmed games:datacenter was listed among available images.
+The image games:datacenter appears as expected.
 
 
+✅ Final Outcome
+1.Successfully created Docker image games:datacenter from the running container ubuntu_latest.
 
-Final Outcome:
-
-The container ubuntu\_latest was successfully committed into a new image named games:datacenter.
-
-
-
-
-
-
-
+2.The developer’s container changes are now safely preserved as a new reusable image.
