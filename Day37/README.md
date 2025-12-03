@@ -1,80 +1,66 @@
-Copy File To Docker Container
+# Copy File to Docker Container
+
+## 📘 Task Overview
+The Nautilus DevOps team needs to securely transfer an encrypted file from the Docker host on **App Server 3** into a running container named **ubuntu_latest**.  
+The file must be copied **without any modification** to ensure confidentiality and integrity.
+
+---
+
+## 📝 Requirements
+
+- **Source file on host:** `/tmp/nautilus.txt.gpg`
+- **Target container:** `ubuntu_latest`
+- **Destination path inside container:** `/opt/`
+- **File must remain unchanged (no edit/transform)**
+
+---
+
+## 🚀 Steps Performed
+
+### 1. Verify Running Container
+```bash
+docker ps
+
+Confirmed that ubuntu_latest is running.
+
+
+2. Copy File from Host to Container
+docker cp /tmp/nautilus.txt.gpg ubuntu_latest:/opt/
+
+This command securely copies the file while preserving its contents and permissions.
 
 
 
-1]
-
-The Nautilus DevOps team possesses confidential data on App Server 3 in the Stratos Datacenter. A container named ubuntu\_latest is running on the same server.
-
-
+3. Verify Inside the Container
+Enter the container:
+docker exec -it ubuntu_latest bash
 
 
-
-Copy an encrypted file /tmp/nautilus.txt.gpg from the docker host to the ubuntu\_latest container located at /opt/. Ensure the file is not modified during this operation.
-
-
-
-->
-
-
-
-📒 OneNote Documentation
-
-
-
-Task Title: Copy Encrypted File from Host to Container
-
-
-
-Objective:
-
-
-
-The Nautilus DevOps team needs to transfer a confidential encrypted file from App Server 3 (host) to the ubuntu\_latest container under /opt/, ensuring the file remains unchanged.
-
-
-
-
-
-Steps Taken:
-
-
-
-1]Checked running containers:
-
-&nbsp;docker ps 
-
-Confirmed that the container ubuntu\_latest was active.
-
-
-
-2]Copied the encrypted file from host to container:
-
-&nbsp;docker cp /tmp/nautilus.txt.gpg  ubuntu\_latest:/opt/
-
-This command securely transfers the file without modification.
-
-
-
-3]Verified inside the container:
-
-docker exec -it ubuntu\_latest bash
-
+Check file:
 ls -l /opt/nautilus.txt.gpg
 
 
-
-Confirmed that the file exists in /opt/.
-
-
-
-Final Outcome:
-
-The file /tmp/nautilus.txt.gpg was successfully copied to /opt/ inside ubuntu\_latest container without any modification. File integrity was verified using checksums.
+Confirmed that the file exists in the /opt/ directory exactly as copied.
 
 
 
+🔐 Integrity Verification (Optional)
+Checksum comparison:
+md5sum /tmp/nautilus.txt.gpg
+md5sum /opt/nautilus.txt.gpg
 
+
+Both checksums matched → file was not modified.
+
+
+
+🎯 Final Outcome
+The encrypted file /tmp/nautilus.txt.gpg was successfully copied from the host into the container.
+The file now exists at /opt/nautilus.txt.gpg inside the ubuntu_latest container.
+File integrity and confidentiality were preserved.
+
+
+✔ Task completed successfully.
 
 
 
