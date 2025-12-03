@@ -1,78 +1,56 @@
-Pull Docker Image
+# Pull and Retag BusyBox Image
 
+## 📘 Task Overview
+The Nautilus project developers are preparing to test features in a containerized environment. As part of the setup, we must:
 
+- Pull the **busybox:musl** image on **App Server 2**.
+- Re-tag it locally as **busybox:news**.
 
-1]
+---
 
-Nautilus project developers are planning to start testing on a new project. As per their meeting with the DevOps team, they want to test containerized environment application features. As per details shared with DevOps team, we need to accomplish the following task:
+## 🎯 Requirements
+1. Pull image: `busybox:musl`
+2. Create a new tag: `busybox:news`
+3. Ensure both images exist locally.
 
+---
 
+## 🚀 Steps Performed
 
-a. Pull busybox:musl image on App Server 2 in Stratos DC and re-tag (create new tag) this image as busybox:news.
-
-
-
-->
-
-
-
-📒 OneNote Documentation
-
-
-
-Task Title: Pull and Retag BusyBox Image
-
-
-
-Objective:
-
-The Nautilus project developers want to test containerized environment features. As part of this, we need to pull the busybox:musl image on App Server 2 and re-tag it as busybox:news.
-
-
-
-
-
-Steps Taken:
-
-
-
-1]Pulled the required image:
-
+### 1. Pull the BusyBox musl Image
+```bash
 docker pull busybox:musl
 
-Downloaded the BusyBox image with the musl tag from Docker Hub.
+
+This fetches the BusyBox image built with musl libc.
 
 
-
-2]Re-tagged the image:
-
+2. Re-tag the Image as busybox:news
 docker tag busybox:musl busybox:news
 
-Created a new tag news for the same image locally.
+This creates a new local tag pointing to the same image.
 
 
 
-3]Verified the images:
-
+3. Verify Images
 docker images
 
 
-
+Expected Output Example:
 REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
-
 busybox      musl      44f1048931f5   11 months ago   1.46MB
-
 busybox      news      44f1048931f5   11 months ago   1.46MB
 
 
-
-Confirmed both busybox:musl and busybox:news exist with the same image ID.
-
+Both tags share the same IMAGE ID, confirming they point to the same underlying image.
 
 
-Final Outcome:
+✅ Final Outcome
+busybox:musl successfully pulled.
 
-The image busybox:musl was successfully pulled and re-tagged as busybox:news. Both images are available on App Server 2 for application testing.
+busybox:news tag successfully created.
 
+Both images available locally for developer testing.
 
+✔ Task completed successfully.
 
