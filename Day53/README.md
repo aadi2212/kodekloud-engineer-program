@@ -1,178 +1,124 @@
-🧾 Task Name: Investigate and Fix Nginx–PHP-FPM Issue in Kubernetes
+# 🛠️ Fixing Nginx–PHP-FPM Shared Volume Issue in Kubernetes
 
+This document explains how the Nautilus DevOps team investigated and fixed a multi-container Kubernetes Pod issue where Nginx failed to serve PHP files correctly due to mismatched document root paths.
 
+---
 
-Scenario:
+## 📌 Scenario Overview
 
-The Nautilus DevOps team encountered an issue with an Nginx and PHP-FPM multi-container Pod running in Kubernetes. The application stopped serving the PHP page correctly. The task was to identify and fix the root cause, and then verify that the website loads successfully.
+A Pod running **Nginx** and **PHP-FPM** stopped serving the PHP application. The task was to identify the root cause, fix it, recreate the Pod, and ensure the website loads correctly.
 
+### 🔹 Pod Details
+- **Pod Name:** `nginx-phpfpm`
+- **ConfigMap Name:** `nginx-config`
+- **Containers:**
+  - `nginx-container` → Web server
+  - `php-fpm-container` → PHP processor
 
+---
 
+## 🔍 Root Cause Analysis
 
+Both containers used the same shared volume, but mounted it at **different paths**:
 
-Pod \& ConfigMap Details
+| Container          | Mount Path             | Volume Name   |
+|--------------------|------------------------|---------------|
+| php-fpm-container  | `/var/www/html`        | shared-files  |
+| nginx-container    | `/usr/share/nginx/html`| shared-files  |
 
-&nbsp;	• Pod name: nginx-phpfpm
+### ❗ What Went Wrong
+1. PHP-FPM created and processed files inside:  
+   `/var/www/html`
+2. Nginx was serving files from:  
+   `/usr/share/nginx/html` → **an empty directory**
+3. Result: Nginx could not find PHP files → **404/403 errors**
 
-&nbsp;	• ConfigMap name: nginx-config
+---
 
-&nbsp;	• Containers:
+## ✅ Solution Steps
 
-&nbsp;		○ nginx-container → Nginx web server
-
-&nbsp;		○ php-fpm-container → PHP processor
-
-
-
-
-
-Root Cause Analysis:
-
-The issue occurred because the two containers were using different document root paths mounted from the shared volume:
-
-
-
-Container	Mount Path	Volume Name
-
-php-fpm-container	/var/www/html	shared-files
-
-nginx-container	/usr/share/nginx/html	shared-files
-
-
-
-Due to this mismatch:
-
-1]Nginx was serving files from /usr/share/nginx/html (empty folder).
-
-2]PHP-FPM was writing files to /var/www/html.
-
-3]Hence, Nginx couldn’t find the PHP file, resulting in 404 or 403 errors.
-
-
-
-This mismatch in mount paths was the main reason the task failed multiple times.
-
-
-
-Solution Steps:
-
-
-
-1]Export the Pod definition
-
+### **1. Export Existing Pod Definition**
+```sh
 kubectl get pod nginx-phpfpm -o yaml > /home/thor/definition.yml
 
 
-
-2]Edit the Pod YAML
-
+2. Edit the Pod YAML
 vi /home/thor/definition.yml
 
 
-
-Locate the nginx-container section and change:
-
-\- mountPath: /usr/share/nginx/html
-
-&nbsp; name: shared-files
+Locate the nginx-container → volumeMounts section and change:
 
 
-
-Change to:
-
-\- mountPath: /var/www/html
-
-&nbsp; name: shared-files
+Original:
+mountPath: /usr/share/nginx/html
+name: shared-files
 
 
+Updated:
+mountPath: /var/www/html
+name: shared-files
 
 
-
-Ensure both containers now have:
-
+✔ Ensure BOTH containers use:
 volumeMounts:
-
-&nbsp; - mountPath: /var/www/html
-
-&nbsp;   name: shared-files
+  - mountPath: /var/www/html
+    name: shared-files
 
 
-
-
-
-3]Recreate the Pod
-
-Since volumeMounts are immutable, delete and recreate the pod:
-
-
-
+3. Recreate the Pod (because volumeMounts are immutable)
 kubectl delete pod nginx-phpfpm
-
 kubectl apply -f /home/thor/definition.yml
 
 
-
-
-
-4]Verify Pod status
-
+4. Verify Pod Status
 kubectl get pods
 
-Ensure both containers are in Running state.
+
+Both containers should show Running.
 
 
-
-
-
-5]Copy PHP file into Nginx document root
-
+5. Copy PHP File to Document Root
 kubectl cp /home/thor/index.php nginx-phpfpm:/var/www/html -c nginx-container
 
 
-
-Verify:
-
+Verify the file inside container:
 kubectl exec -it nginx-phpfpm -c nginx-container -- ls /var/www/html
 
 
+6. Test the Website
+Use the lab’s Website button.
+✔ The PHP page should now load correctly.
 
 
+📚 Key Learnings
 
-6] Test Website
+✔ 1. Immutable Fields in Kubernetes
 
-Click the Website button in the lab interface.
-
-✅ The PHP page should load successfully.
-
-
+Fields like volumeMounts and volumes cannot be edited.
+You must delete & recreate the Pod.
 
 
+✔ 2. Matching Document Roots
 
-Key Learnings:
+For Nginx + PHP-FPM:
 
-1]Kubernetes Pods cannot be edited directly for immutable fields like volumeMounts or volumes.
+Both must point to the same directory
 
-→ Must delete and recreate the Pod with corrected YAML.
-
-
-
-2]Always verify shared volume mount paths between containers when debugging multi-container setups.
+Especially when using a shared volume
 
 
+✔ 3. Multi-Container Pods Require Consistency
 
-3]Consistency between Nginx’s root directive and PHP-FPM’s document root is crucial.
-
-
-
+Shared volumes must be mounted identically across containers.
 
 
-✅ Final Outcome:
+🎉 Final Outcome
 
-The website was restored successfully after correcting the shared volume mount path in the Nginx container.
+The issue was resolved by aligning the shared volume mount paths between Nginx and PHP-FPM.
+The website began loading successfully again.
 
-Task marked as Completed ✅.
-
-
-
+Task Status: Completed ✅
 
 
+sh
+kubectl get pod nginx-phpfpm -o yaml > /home/thor/definition.yml
