@@ -39,11 +39,13 @@ Kubernetes **Secrets** allow sensitive information (passwords, API keys, license
 
 Use the file `/opt/media.txt` to generate a Kubernetes secret:
 
+```bash
+kubectl create secret generic media --from-file=/opt/media.txt
+
 
 ✔️ Verify the Secret
 kubectl get secrets
 kubectl describe secret media
-
 
 
 🛠️ Step 2: Create the Pod YAML File
@@ -74,9 +76,8 @@ kubectl get pods
 Wait until the pod shows Running status.
 
 
-Step 4: Verify the Secret Inside the Pod
+🧪 Step 4: Verify the Secret Inside the Pod
 kubectl exec -it secret-nautilus -- /bin/bash
-
 
 Then inside the container:
 cd /opt/apps
@@ -94,7 +95,3 @@ Pod secret-nautilus mounts and consumes the secret.
 Secret data is available at /opt/apps inside the container.
 
 Sensitive license information remains secure within the cluster.
-
-
-```bash
-kubectl create secret generic media --from-file=/opt/media.txt
