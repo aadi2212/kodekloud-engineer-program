@@ -53,7 +53,7 @@ spec:
 
 ---
 
-## 🚀 Step 2: Apply the Pod
+🚀 Step 2: Apply the Pod
 kubectl apply -f webserver.yaml
 
 Verify the Pod:
@@ -63,14 +63,14 @@ kubectl get pods
 Describe to check two containers:
 kubectl describe pod webserver
 
----
 
-## 🚀 Step 3: Validate Volume & Log Shipping
+
+ 🚀 Step 3: Validate Volume & Log Shipping
 List logs from both containers:
 kubectl exec -it webserver -c nginx-container -- ls /var/log/nginx
 kubectl exec -it webserver -c sidecar-container -- ls /var/log/nginx
 
----
+
 
 Check log shipping activity:
 kubectl logs -f webserver -c sidecar-container
