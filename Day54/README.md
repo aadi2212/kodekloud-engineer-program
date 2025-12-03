@@ -109,5 +109,4 @@ Avoid indentation mistakes
 
 
 🎉 You have successfully created a multi-container pod with a shared volume in Kubernetes!
-    - name: volume-share
-      emptyDir: {}
+    
