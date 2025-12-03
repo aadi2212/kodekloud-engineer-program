@@ -120,5 +120,4 @@ The website began loading successfully again.
 Task Status: Completed ✅
 
 
-sh
-kubectl get pod nginx-phpfpm -o yaml > /home/thor/definition.yml
+
