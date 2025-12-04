@@ -1,86 +1,86 @@
-Fork a git repository
+# Fork a Git Repository – Jon | KodeKloud Task
 
+## 📌 Task Overview
 
+A new developer, Jon, needs to **fork an existing repository** to start working on a project. The repository to be forked is `sarah/story-blog`.
 
-1]
+**Objective:**
 
-There is a Git server utilized by the Nautilus project teams. Recently, a new developer named Jon joined the team and needs to begin working on a project. To begin, he must fork an existing Git repository. Follow the steps below:
+* Fork `sarah/story-blog` under Jon's account
+* Verify that the forked repository is accessible under Jon's account
 
-1\. Click on the Gitea UI button located on the top bar to access the Gitea page.
+**Environment:**
 
-2\. Login to Gitea server using username jon and password Jon\_pass123.
+* Git Web UI: Gitea
+* Username: jon
+* Password: Jon_pass123
 
-3\. Once logged in, locate the Git repository named sarah/story-blog and fork it under the jon user.
+---
 
+## 🏁 Steps Performed
 
+### 1️⃣ Access Gitea Web UI
 
-Note: For tasks requiring web UI changes, screenshots are necessary for review purposes. Additionally, consider utilizing screen recording software such as loom.com to record and share your task completion process.
+* Click on the **Gitea UI** button in the top bar of the lab environment/dashboard.
+* This opens the Gitea web interface.
 
+---
 
+### 2️⃣ Login as Jon
 
-->
-
-
-
-Steps to Fork Repository in Gitea for Jon:
-
-
-
-1]Access Gitea Web UI:
-
-On your lab environment/dashboard, click on the “Gitea UI” button in the top bar.
-
-This will open the Gitea web interface.
-
-
-
-2]Login as Jon:
-
+```text
 Username: jon
+Password: Jon_pass123
+```
 
-Password: Jon\_pass123
+* Click **Sign In** to access Jon’s Gitea account.
 
-Click Sign In.
+---
 
+### 3️⃣ Locate the Repository
 
+* Use the search bar (top-right) and search for:
 
-3]Locate the Repository:
-
-Once logged in, go to the search bar (usually top-right) and type:
-
-
-
+```
 sarah/story-blog
+```
 
+* Open the repository from the search results.
 
+---
 
+### 4️⃣ Fork the Repository
 
+1. On the repository page, click the **Fork** button (top-right).
+2. Select **jon** as the destination account.
 
-4]Fork the Repository:
+✅ After completion, a new repository is created:
 
-1]Open the repository.
+```
+jon/story-blog
+```
 
-2]On the top-right of the repository page, click the Fork button.
+---
 
-3]Select the jon account as the destination.
+### 5️⃣ Verify the Fork
 
+* You should be redirected to the forked repository under Jon's account.
+* Confirm that the repository URL is:
 
-
-✅ This creates a new repository jon/story-blog under Jon’s account.
-
-
-
-
-
-5]Verify the Fork:
-
-1]After forking, you should be redirected to the new repo under jon.
-
-2]Confirm that the repository URL is now something like:
-
-
-
+```
 http://<gitea-url>/jon/story-blog
+```
 
+* Ensure that all files and commit history from the original repository are present.
 
+---
 
+## ✅ Final Outcome
+
+1. Repository `sarah/story-blog` successfully forked under Jon’s account as `jon/story-blog`.
+2. Jon can now start working on the project using his forked repository.
+3. Fork verified in Gitea UI.
+
+---
+
+# End of Documentation
