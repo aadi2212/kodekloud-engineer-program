@@ -1,78 +1,72 @@
-Clone Git Repository on Storage Server
+# Clone Git Repository on Storage Server – Nautilus Task
 
+## 📌 Task Overview
 
+The Nautilus development team requires a **local copy of an existing Git repository** on the Storage Server in Stratos DC.
 
-1]The DevOps team established a new Git repository last week, which remains unused at present. However, the Nautilus application development team now requires a copy of this repository on the Storage Server in the Stratos DC. Follow the provided details to clone the repository:
+**Objective:**
 
+* Clone `/opt/official.git` repository to `/usr/src/kodekloudrepos`
+* Ensure no modifications are made to repository or directories
+* Perform task using `natasha` user
 
+**Environment:**
 
-1]The repository to be cloned is located at /opt/official.git
+* Storage Server (Stratos DC)
+* User: natasha
+* Source repository: `/opt/official.git`
+* Target directory: `/usr/src/kodekloudrepos`
 
+---
 
+## 🏁 Steps Performed
 
-2]Clone this Git repository to the /usr/src/kodekloudrepos directory. Perform this task using the natasha user, and ensure that no modifications are made to the repository or existing directories, such as changing permissions or making unauthorized alterations.
+### 1️⃣ Log in to the Storage Server
 
+```bash
+ssh natasha@172.16.238.15
+```
 
+---
 
-->
+### 2️⃣ Navigate to the Target Directory
 
-
-
-Steps to Clone the Git Repository:
-
-1]Log in into the storage server:
-
-&nbsp;ssh natasha@172.16.238.15
-
-
-
-2]Navigate to the target directory:
-
-Ensure you are in the /usr/src/kodekloudrepos directory before cloning.
-
-
-
+```bash
 cd /usr/src/kodekloudrepos
+```
 
+> Ensure you are in the correct directory before cloning.
 
+---
 
+### 3️⃣ Clone the Repository
 
+```bash
+git clone /opt/official.git
+```
 
-3]Clone the repository
+> This will create a directory named `official` inside `/usr/src/kodekloudrepos`.
 
-The source repository is /opt/official.git. Run:
+---
 
-&nbsp;git clone /opt/official.git
+### 4️⃣ Verify the Cloned Repository
 
-
-
-This will create a directory called official (or whatever the repo name is) inside /usr/src/kodekloudrepos.
-
-
-
-
-
-4]Verify the repository was cloned successfully:
-
+```bash
 ls -ld /usr/src/kodekloudrepos/official
-
 cd /usr/src/kodekloudrepos/official
-
 git status
+```
 
+* Expected output: Clean working directory, no modifications.
 
+---
 
-You should see a clean working directory with no modifications.
+## ✅ Important Notes
 
+1. Always run clone as **natasha**, not root.
+2. Do not change ownership or permissions of `/usr/src/kodekloudrepos` or `/opt/official.git`.
+3. Only clone the repository; no other operations are required.
 
+---
 
-✅ Important Notes:
-
-1]Don’t run the clone as root; always use natasha.
-
-2]Don’t change ownership/permissions of /usr/src/kodekloudrepos or /opt/official.git.
-
-3]Just clone, nothing else.
-
-
-
+# End of Documentation
