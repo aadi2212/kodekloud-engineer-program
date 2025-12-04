@@ -1,61 +1,92 @@
-✅ Day 3: Secure Root SSH Access
-✅ 1. Task Overview
+# Secure Root SSH Access – App Servers (Stratos DC)
 
-Disable direct SSH login for the root user on all application servers (App Server 1, App Server 2, App Server 3) to improve server security. Only non-root users with sudo privileges will be able to log in.
+## 📌 Task Overview
 
-✅ 2. Prerequisites
+Following security audits, xFusionCorp Industries implemented stricter access control policies. One key measure is **disabling direct SSH root login** on all application servers to prevent unauthorized privileged access.
 
-Access to application servers via a non-root user (e.g., tony) with sudo privileges.
+**Objective:**
 
-Basic knowledge of SSH and editing Linux configuration files.
+* Disable direct SSH root login on all App Servers:
 
-✅ 3. Step-by-Step Instructions
+  * App Server 1
+  * App Server 2
+  * App Server 3
 
-SSH into each application server:
+**Project Date:** 10-Aug-2025
+**Category:** Linux Server Security / SSH Configuration
 
-ssh tony@<server-ip>
+---
 
+## 🛠 Step-by-Step Implementation
 
-Switch to the root user:
+### 1️⃣ SSH into Each App Server
 
+```bash
+ssh tony@172.16.238.10
+# Repeat for App Server 2 and 3 using respective sudo users
+```
+
+---
+
+### 2️⃣ Switch to Root
+
+```bash
 sudo su -
+```
 
+---
 
-Edit the SSH configuration file:
+### 3️⃣ Edit SSH Configuration
 
+```bash
 vi /etc/ssh/sshd_config
-
+```
 
 Locate the line:
 
-#PermitRootLogin yes
+```
+PermitRootLogin yes
+```
 
+* Change it to:
 
-Change it to:
-
+```
 PermitRootLogin no
+```
 
+> ⚡ If the line is commented (`#`), remove the `#` and set it to `no`.
 
-Save the file and exit the editor.
+---
 
-Restart the SSH service to apply changes:
+### 4️⃣ Restart SSH Service
 
+```bash
 systemctl restart sshd
+```
 
-✅ 4. Verification
+---
 
-Check that root login is disabled:
+### 5️⃣ Verify Configuration
 
+```bash
 grep PermitRootLogin /etc/ssh/sshd_config
+```
 
+**Expected Output:**
 
-Expected Output:
-
+```
 PermitRootLogin no
+```
 
+---
 
-Attempting to SSH directly as root should fail, while a non-root user with sudo should succeed.
+## ✅ Validation
 
-✅ 5. Conclusion
+* Confirm that **root SSH login is blocked**.
+* Only non-root accounts with **sudo privileges** can access via SSH.
 
-Direct SSH access for the root user has been disabled on all application servers. This enhances security by requiring users to log in via non-root accounts and use sudo for administrative tasks, reducing the risk of unauthorized privileged access.
+---
+
+## 🔒 Security Impact
+
+* Reduces the risk of **brute-force attacks** on the root user
