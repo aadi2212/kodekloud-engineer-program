@@ -1,82 +1,93 @@
-✅ Day 1: Linux User Setup with Non-Interactive Shell
-✅ 1. Task Overview
+# Linux User Setup with Non-Interactive Shell – App Server 3 (Stratos DC)
 
-The system admin team at xFusionCorp Industries needs to create a service account for a backup agent.
-This account must not have interactive shell access.
+## 📌 Task Overview
 
-Your task:
+The system admin team at xFusionCorp Industries needs to create a **service account** for a backup agent.
+This account must **not have interactive shell access**.
 
-👉 Create a user siva on App Server 3 (stapp03) with a non-interactive shell.
+**Objective:**
 
-✅ 2. Objective
+* Create user `siva` on App Server 3 (stapp03)
+* Assign a **non-login shell** (`/sbin/nologin` or equivalent)
+* Ensure the user cannot log in interactively
 
-Create user siva on stapp03
+**Date:** 7-Aug-2025
+**Category:** Linux, User Management, Shell Access Control
 
-Assign a non-login shell (/sbin/nologin or equivalent)
+---
 
-Ensure the user cannot log in interactively
+## 🛠 Step-by-Step Execution
 
-✅ 3. Access the Server
+### 1️⃣ SSH into App Server 3
 
-SSH into App Server 3:
-
+```bash
 ssh banner@172.16.238.12
+# password: BigGr33n
+```
 
+---
 
-Password: BigGr33n
-
-✅ 4. Configure the User Shell
+### 2️⃣ Configure the User Shell
 
 Assign a non-interactive shell to the user:
 
+```bash
 sudo usermod -s /sbin/nologin siva
+```
 
+> ⚡ This ensures `siva` cannot log in or access an interactive shell.
 
-👉 This ensures siva cannot log in or access an interactive shell.
+---
 
-✅ 5. Verification
-🔍 Check user entry:
+### 3️⃣ Verification
+
+1. Check user entry:
+
+```bash
 getent passwd siva
+```
 
+**Expected Output:**
 
-Expected Output:
-
+```
 siva:x:1001:1001::/home/siva:/sbin/nologin
+```
 
-🔍 Check all available shells:
+2. List all available shells:
+
+```bash
 cat /etc/shells
+```
 
-🔍 Verify via /etc/passwd:
+3. Verify via `/etc/passwd`:
+
+```bash
 grep siva /etc/passwd
+```
 
+**Expected Output:**
 
-Expected:
-
+```
 siva:x:1001:1001::/home/siva:/sbin/nologin
+```
 
-✅ 6. Notes
+---
 
-This configuration is ideal for service accounts or automation users.
+### 4️⃣ Notes
 
-Alternative non-login shells:
+* This configuration is ideal for **service accounts** or **automation users**.
+* Alternative non-login shells:
 
-/usr/sbin/nologin
+  * `/usr/sbin/nologin`
+  * `/bin/false`
 
-/bin/false
+---
 
-📘 7. Task Information
-Field	Details
-Task ID	Linux User & Shell Management
-Date	7/8/2025
-Category	Linux, User Management, Shell Access Control
-Environment	Stratos Datacenter
-Server	stapp03 (User: banner)
-🎉 Final Result
+## ✅ Final Outcome
 
-✔ User siva created
-✔ Non-interactive shell applied
-✔ Verification complete
-✔ Task successfully completed
+* User `siva` created successfully
+* Non-interactive shell applied
+* Verification complete
+* Task successfully completed
 
-
-
+# End of Documentation
