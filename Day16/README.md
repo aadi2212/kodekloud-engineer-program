@@ -1,226 +1,143 @@
-Install and configure nginx as an LBR
+# Nginx Load Balancer Setup – Nautilus Stratos DC
 
+## 📌 Task Overview
 
+Due to increasing website traffic, the Nautilus team decided to deploy their application on a **high-availability stack**. The LBR (Load Balancer) configuration is required to complete the setup.
 
-1]
+**Objective:**
 
-Day by day traffic is increasing on one of the websites managed by the Nautilus production support team. Therefore, the team has observed a degradation in website performance. Following discussions about this issue, the team has decided to deploy this application on a high availability stack i.e on Nautilus infra in Stratos DC. They started the migration last month and it is almost done, as only the LBR server configuration is pending. Configure LBR server as per the information given below:
+* Install Nginx on LBR server
+* Load balance across **3 app servers**
+* Use correct Apache ports (do not change existing Apache configuration)
+* Verify access from Jump Host / StaticApp
 
+---
 
+## 🛠 Step-by-Step Execution
 
+### 1️⃣ Install & Start Nginx
 
-
-a. Install nginx on LBR (load balancer) server.
-
-
-
-b. Configure load-balancing with the an http context making use of all App Servers. Ensure that you update only the main Nginx configuration file located at /etc/nginx/nginx.conf.
-
-
-
-c. Make sure you do not update the apache port that is already defined in the apache configuration on all app servers, also make sure apache service is up and running on all app servers.
-
-
-
-d. Once done, you can access the website using StaticApp button on the top bar.
-
-
-
-->
-
-
-
-✅ Nginx Load Balancer Setup \& Troubleshooting (Checklist)
-
-
-
-Task Goal
-
-&nbsp;	• Setup Nginx on LBR server.
-
-&nbsp;	• Load balance across 3 app servers.
-
-&nbsp;	• Use the correct Apache port (don’t change it).
-
-&nbsp;	• Verify access from Jump Host / StaticApp.
-
-
-
-
-
-Steps:
-
-1]Install \& Start Nginx
-
+```bash
 sudo yum install -y nginx
-
-
-
 sudo systemctl status nginx
 
+# If stopped
+sudo systemctl start nginx
+sudo systemctl enable nginx
+```
 
+---
 
-If stopped then start using:
+### 2️⃣ Verify Apache on App Servers
 
-&nbsp;sudo systemctl start nginx 
-
-&nbsp;sudo systemctl enable nginx
-
-
-
-2]Check apache service on each app server first
-
-
-
+```bash
 ssh tony@172.16.238.10
-
 ssh steve@172.16.238.11
+ssh banner@172.16.238.12
+```
 
-ssh banner@172.16.238.12 
+Check Apache service:
 
+```bash
+sudo systemctl status httpd
+```
 
+Check Apache listening port:
 
-Check status using command sudo systemctl status httpd
-
-
-
-
-
-3]Check Apache Port on App Servers:
-
+```bash
 sudo grep -i Listen /etc/httpd/conf/httpd.conf
+# Found: Listen 3003
+```
 
+---
 
+### 3️⃣ Configure Nginx for Load Balancing
 
-• Found: Listen 3003
+Edit the main configuration file:
 
-• So Apache runs on 3003, not 8080.
-
-
-
-
-
-
-
-4]Fix Nginx Config
-
-
-
+```bash
 sudo vi /etc/nginx/nginx.conf
+```
 
+**nginx.conf Example:**
 
-
+```nginx
 user nginx;
-
-worker\_processes auto;
-
-error\_log /var/log/nginx/error.log;
-
+worker_processes auto;
+error_log /var/log/nginx/error.log;
 pid /run/nginx.pid;
 
-
-
-include /usr/share/nginx/modules/\*.conf;
-
-
+include /usr/share/nginx/modules/*.conf;
 
 events {
-
-&nbsp;   worker\_connections 1024;
-
+    worker_connections 1024;
 }
-
-
 
 http {
+    upstream backend {
+        server stapp01:3003;
+        server stapp02:3003;
+        server stapp03:3003;
+    }
 
-&nbsp;   upstream backend {
+    server {
+        listen 80;
 
-&nbsp;       server stapp01:3003;
+        location / {
+            proxy_pass http://backend;
+        }
+    }
 
-&nbsp;       server stapp02:3003;
-
-&nbsp;       server stapp03:3003;
-
-&nbsp;   }
-
-
-
-&nbsp;   server {
-
-&nbsp;       listen 80;
-
-
-
-&nbsp;       location / {
-
-&nbsp;           proxy\_pass http://backend;
-
-&nbsp;       }
-
-&nbsp;   }
-
-
-
-&nbsp;   include /etc/nginx/conf.d/\*.conf;
-
+    include /etc/nginx/conf.d/*.conf;
 }
+```
 
+> ⚠️ Ensure default configuration is deleted to avoid conflicts.
 
+---
 
-5]Test config:
+### 4️⃣ Test & Restart Nginx
 
-&nbsp;sudo  nginx -t 
+```bash
+sudo nginx -t
+sudo systemctl restart nginx
+```
 
-&nbsp;sudosystemctl restart nginx
+---
 
+### 5️⃣ Verify Load Balancer
 
+Test each app server individually:
 
-6]Verify all app servers
-
-
-
-curl http://172.16.238.10
-
-Curl http://172.16.238.11
-
-Curl http://172.16.238.12
-
-
-
-Welcome to xFusionCorp Industries!
-
-
-
-From Jump Host
-
-
-
-Curl http://172.16.238.14
-
-
-
-7]Expected output:
-
+```bash
+curl http://172.16.238.10:3003
 curl http://172.16.238.11:3003
+curl http://172.16.238.12:3003
+# Output: Welcome to xFusionCorp Industries!
+```
 
-Welcome to xFusionCorp Industries!
+Test via Load Balancer from Jump Host:
 
+```bash
+curl http://172.16.238.14
+```
 
+---
 
-Troubleshooting Notes:
+## 🐞 Troubleshooting Notes
 
+* ❌ **Error:** "server" directive not allowed → caused by missing braces `{}` in nginx.conf
+* ❌ **Error:** Failed to connect to port 8080 → Apache runs on 3003, not 8080
+* ✅ Resolution: Correct upstream ports and ensure braces are properly set
+* ✅ Validate Nginx config and remove default configs to avoid conflicts
 
+---
 
-❌ Error: "server" directive not allowed → caused by missing braces {} in nginx.conf.
+## ✅ Final Outcome
 
-❌ Error: Failed to connect to port 8080 → Apache was running on 3003, not 8080.
+* Nginx installed and running on LBR server
+* Load balancing across all app servers working correctly
+* Apache services on all app servers remain unchanged
+* Website accessible via LBR IP and individual app servers
 
-❌ Due to default configuration I got errors so make sure to delete default configuration.
-
-✅ Fixed both → Nginx config validated \& site accessible.
-
-&nbsp;
-
-
-
+# End of Documentation
