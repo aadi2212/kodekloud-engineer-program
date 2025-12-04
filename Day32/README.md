@@ -1,142 +1,120 @@
-Git Rebase
+# Git Rebase – Feature Branch with Master | KodeKloud Task
 
+## 📌 Task Overview
 
+The Nautilus application development team needed to **rebase a feature branch onto the master branch** without losing any data and **without creating merge commits**.
 
-1]
+**Repository Location:** `/opt/official.git`
+**Local Clone:** `/usr/src/kodekloudrepos/official`
 
-he Nautilus application development team has been working on a project repository /opt/official.git. This repo is cloned at /usr/src/kodekloudrepos on storage server in Stratos DC. They recently shared the following requirements with DevOps team:
+**Objective:**
 
+* Rebase the feature branch with master
+* Preserve all commits from the feature branch
+* Avoid merge commits
+* Push the updated feature branch to remote
 
+---
 
+## 🏁 Steps Performed
 
+### 1️⃣ Navigate to the Repository
 
-One of the developers is working on feature branch and their work is still in progress, however there are some changes which have been pushed into the master branch, the developer now wants to rebase the feature branch with the master branch without loosing any data from the feature branch, also they don't want to add any merge commit by simply merging the master branch into the feature branch. Accomplish this task as per requirements mentioned.
-
-
-
-Also remember to push your changes once done.
-
-
-
-->
-
-
-
-📘 Documentation – Git Rebase (Feature Branch with Master)
-
-
-
-Objective
-
-
-
-The Nautilus application development team has been working on a repository /opt/official.git, cloned under /usr/src/kodekloudrepos. A developer is working on a feature branch, while other changes have already been pushed to the master branch.
-
-
-
-The requirement was to rebase the feature branch with master without losing any data from the feature branch and without creating merge commits (so git merge was not allowed).
-
-
-
-
-
-Steps Performed:
-
-1]Navigate to the repository
-
+```bash
 cd /usr/src/kodekloudrepos/official
+```
 
+### 2️⃣ Check Existing Branches
 
-
-2]Check branches
-
+```bash
 git branch -a
+```
 
-Confirmed that both master and feature branches exist.
+> Confirmed both `master` and `feature` branches exist.
 
+---
 
+### 3️⃣ Update Local Master Branch
 
-3]Update master branch
+```bash
+git checkout master
+git pull origin master
+```
 
-&nbsp;git checkout master
+> Ensures local master is up-to-date with remote.
 
-&nbsp;git pull origin master
+---
 
+### 4️⃣ Switch to Feature Branch
 
-
-Ensured the local master branch is up to date with remote.
-
-
-
-4]Switch to feature branch
-
+```bash
 git checkout feature
+```
 
+---
 
+### 5️⃣ Rebase Feature onto Master
 
-5]Rebase feature onto master
-
+```bash
 git rebase master
+```
 
+> Re-applies commits from the feature branch on top of the updated master branch.
 
+**Handling Conflicts (if any):**
 
-Re-applied commits from feature branch on top of the updated master.
+1. Resolve conflicts manually in the affected files
+2. Stage resolved files:
 
-
-
-In case of conflicts:
-
-1]Resolved conflicts manually.
-
-2]Staged changes:
-
+```bash
 git add <file>
+```
 
+3. Continue the rebase:
 
-
-3]Continued rebase:
-
+```bash
 git rebase --continue
+```
 
+---
 
+### 6️⃣ Verify Commit History
 
-4]Verify commit history
-
+```bash
 git log --oneline --graph --all
+```
 
+Example output:
 
+```
+* 5f0b0f1 (HEAD -> feature) Add new feature
+* 481a103 (origin/master, master) Update info.txt
+| * e5b1e26 (origin/feature) Add new feature
+|/
+* c435c9a initial commit
+```
 
-\* 5f0b0f1 (HEAD -> feature) Add new feature
+> Confirmed that feature commits are now on top of master with **no merge commits** introduced.
 
-\* 481a103 (origin/master, master) Update info.txt
+---
 
-| \* e5b1e26 (origin/feature) Add new feature
+### 7️⃣ Push Rebases Feature Branch to Remote
 
-|/  
-
-\* c435c9a initial commit
-
-
-
-Confirmed that feature commits are now on top of master.
-
-No merge commits were introduced.
-
-
-
-5]Push rebased feature branch to remote.
-
+```bash
 git push origin feature --force
+```
 
+> Force push is required because rebasing rewrites commit history.
 
+---
 
-Final State:
+## ✅ Final State
 
-The feature branch is now fully rebased on top of the latest master.
+1. Feature branch is fully rebased on top of the latest master.
+2. Developer’s changes are intact.
+3. Git history is clean with no merge commits.
+4. Remote repository updated successfully.
 
-Developer’s changes are intact, and history is clean (no merge commits).
+---
 
-Remote repository updated successfully after force push.
-
-
-
+# End of Documentation
