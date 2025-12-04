@@ -1,118 +1,103 @@
-Git Revert Some Changes
+# Git Revert – Revert Latest Commit | KodeKloud Task
 
+## 📌 Task Overview
 
+The Nautilus application development team reported an issue with recent commits in the repository `/usr/src/kodekloudrepos/demo`.
 
-1]
+**Objective:**
 
-The Nautilus application development team was working on a git repository /usr/src/kodekloudrepos/demo present on Storage server in Stratos DC. However, they reported an issue with the recent commits being pushed to this repo. They have asked the DevOps team to revert repo HEAD to last commit. Below are more details about the task:
+* Revert the latest commit (`HEAD`) to the previous commit
+* Create a new revert commit with the message: `revert demo message`
+* Preserve commit history while undoing the changes
 
-&nbsp;	1. In /usr/src/kodekloudrepos/demo git repository, revert the latest commit ( HEAD ) to the previous commit (JFYI the previous commit hash should be with initial commit message ).
+---
 
-&nbsp;	2. Use revert demo message (please use all small letters for commit message) for the new revert commit.
+## 🏁 Steps Performed
 
-->
+### 1️⃣ SSH into Storage Server
 
-
-
-&nbsp;   Steps to Complete the Task:
-
-
-
-1]SSH into Storage Server
-
+```bash
 ssh natasha@ststor01
+```
 
+---
 
+### 2️⃣ Navigate to Repository
 
-2]Navigate to the repo
-
+```bash
 cd /usr/src/kodekloudrepos/demo
+```
 
+---
 
+### 3️⃣ Check Commit History
 
-3]Navigate to the repo
+```bash
+sudo git log --oneline
+```
 
-cd /usr/src/kodekloudrepos/demo
+Example output:
 
-
-
-4]Check git log to see commits
-
-&nbsp;sudo git log --oneline
-
-
-
-5]Example output:
-
+```
 1393c4e (HEAD -> master, origin/master) add data.txt file
-
 13be74c initial commit
+```
 
+> Latest commit to revert: `1393c4e` (`add data.txt file`)
 
+---
 
+### 4️⃣ Revert the Latest Commit
 
+#### Option A – Interactive (editor opens)
 
-6]Revert the latest commit (HEAD)
-
-git revert does not use -m "message" for normal commits. Either let the editor open or use the two-step non-interactive method below.
-
-
-
-Option A (editor opens):
-
+```bash
 git revert HEAD
+```
 
+* Replace the default commit message with:
 
-
-When the editor opens, replace the default text with:
-
+```
 revert demo message
+```
 
+* Save and exit editor
 
+#### Option B – Non-Interactive (one-shot)
 
-Option B (non-interactive, one shot):
-
+```bash
 git revert -n HEAD
-
 git commit -m "revert demo message"
+```
 
+> If repository permissions require it, prefix commands with `sudo`.
 
+---
 
-If permissions require it (repo owned by root), prefix with sudo.
+### 5️⃣ Verify New Revert Commit
 
-
-
-
-
-7]Verify new commit on top.
-
+```bash
 git log --oneline -n 3
+```
 
+Expected output:
 
-
-Expected:
-
+```
 66a9c61 (HEAD -> master) revert demo message
-
 1393c4e (origin/master) add data.txt file
-
 13be74c initial commit
+```
 
+> The top commit should now be `revert demo message`.
 
+---
 
-✅ The new top commit should be revert demo message.
+## ✅ End Result
 
+1. Latest commit is reverted successfully.
+2. New commit `revert demo message` is created to undo the previous changes.
+3. Repository history is maintained, and the repo points back to the state of the previous commit.
 
+---
 
-
-
-End Result:
-
-Latest commit reverted.
-
-A new commit revert demo message created to undo the changes.
-
-Repo now points back to the state of the initial commit (but with proper history maintained).
-
-
-
+# End of Documentation
