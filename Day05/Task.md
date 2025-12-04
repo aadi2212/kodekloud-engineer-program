@@ -1,60 +1,71 @@
-✅ Day 5: SELinux Installation and Configuration
-✅ 1. Task Overview
+# SELinux Installation & Configuration – App Server 2 (Stratos DC)
 
-Enhance server security on App Server 2 by installing SELinux management packages and configuring SELinux. For testing purposes, SELinux will be temporarily disabled and re-enabled after necessary configuration changes. No immediate reboot is required.
+## 📌 Task Overview
 
-✅ 2. Prerequisites
+Following a security audit, the security team decided to **enhance server security using SELinux**.
 
-Access to App Server 2 via a user with sudo privileges.
+**Objective:**
 
-Basic knowledge of SELinux and Linux package management (yum).
+* Install SELinux management packages
+* Permanently disable SELinux for now
+* Avoid reboot; final status will reflect after scheduled reboot
 
-✅ 3. Step-by-Step Instructions
+---
 
-Install SELinux packages
+## 🛠 Step-by-Step Execution
 
+### 1️⃣ Install SELinux Packages
+
+```bash
 sudo yum install -y policycoreutils selinux-policy selinux-policy-targeted
+```
 
+* Installs essential SELinux management tools and policies
 
-Permanently disable SELinux
+---
 
-Edit the SELinux configuration file to disable it permanently:
+### 2️⃣ Permanently Disable SELinux
 
+Edit the SELinux configuration file:
+
+```bash
 sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+```
 
+Alternatively, manually edit `/etc/selinux/config` and set:
 
-Alternative: Manually edit /etc/selinux/config and set:
-
+```text
 SELINUX=disabled
+```
 
+---
 
-Temporarily disable SELinux without reboot
+### 3️⃣ Temporarily Disable SELinux Without Reboot
 
+```bash
 sudo setenforce 0
+```
 
+* Puts SELinux into **permissive mode** until next reboot
 
-This sets SELinux to permissive mode until the server is rebooted.
+---
 
-Verify SELinux status
+### 4️⃣ Verify SELinux Status
 
+```bash
 getenforce
+```
 
+* Output should show **Permissive** or **Disabled**
 
-Expected Output:
+---
 
-Permissive
+## ✅ Final Outcome
 
+* SELinux packages installed on App Server 2
+* SELinux permanently disabled in config file
+* Temporarily set to permissive mode for immediate effect
+* Final status after reboot will be **disabled**
+* Server ready for further configuration/testing
 
-After the planned maintenance reboot, SELinux should be disabled.
-
-✅ 4. Verification
-
-Run getenforce to confirm temporary permissive mode.
-
-Check /etc/selinux/config to ensure SELINUX=disabled is set for permanent disablement.
-
-✅ 5. Conclusion
-
-SELinux management packages were installed, SELinux was temporarily disabled for testing, and permanent disablement was configured for after the planned reboot. This setup prepares the server for future SELinux-based security enhancements while maintaining operational continuity.
-
-
+# End of Documentation
