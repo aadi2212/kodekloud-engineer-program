@@ -1,238 +1,147 @@
-Init Containers in Kubernetes
+# Init Containers in Kubernetes  
+### Using Init Containers for Pre-Configuration Tasks
+
+This guide walks through deploying an application on Kubernetes using **init containers** to perform setup tasks before the main application container runs. This setup is useful when configuration changes cannot be embedded directly into the container image.
+
+---
+
+## ✅ **Objective**
+
+Deploy a Kubernetes application that:
+
+- Uses an **init container** to generate a configuration file.
+- Shares that configuration with the **main container** through an `emptyDir` volume.
+- Continuously prints the configuration file content.
+
+---
+
+## 🧩 **Requirements**
+
+| Item | Value |
+|------|-------|
+| Deployment Name | `ic-deploy-devops` |
+| Replicas | `1` |
+| Label | `app=ic-devops` |
+| Init Container | `ic-msg-devops` |
+| Main Container | `ic-main-devops` |
+| Volume | `ic-volume-devops` (`emptyDir`) |
+| Volume Mount Path | `/ic` |
+
+### **Init Container Task**
+Writes the message
+
+Init Done - Welcome to xFusionCorp Industries
 
 
 
-1]There are some applications that need to be deployed on Kubernetes cluster and these apps have some pre-requisites where some configurations need to be changed before deploying the app container. Some of these changes cannot be made inside the images so the DevOps team has come up with a solution to use init containers to perform these tasks during deployment. Below is a sample scenario that the team is going to test first.
+to `/ic/official`
 
-1\. Create a Deployment named as ic-deploy-devops.
+### **Main Container Task**
+Reads and prints `/ic/official` every 5 seconds.
 
-2\. Configure spec as replicas should be 1, labels app should be ic-devops, template's metadata lables app should be the same ic-devops.
+---
 
-3\. The initContainers should be named as ic-msg-devops, use image ubuntu with latest tag and use command '/bin/bash', '-c' and 'echo Init Done - Welcome to xFusionCorp Industries > /ic/official'. The volume mount should be named as ic-volume-devops and mount path should be /ic.
+## 📄 **Step 1: Deployment YAML**
 
-4\. Main container should be named as ic-main-devops, use image ubuntu with latest tag and use command '/bin/bash', '-c' and 'while true; do cat /ic/official; sleep 5; done'. The volume mount should be named as ic-volume-devops and mount path should be /ic.
-
-5\. Volume to be named as ic-volume-devops and it should be an emptyDir type.
-
-
-
-Note: The kubectl utility on jump\_host has been configured to work with the kubernetes cluster.
-
-
-
-->
-
-
-
-Kubernetes Task: Using Init Containers in a Deployment
-
-
-
-Objective:
-
-Deploy an application on Kubernetes using init containers to perform pre-configuration tasks before starting the main application container. The goal is to ensure configuration files or prerequisites are set up in shared volumes before the main container starts.
-
-
-
-Task Details:
-
-• Deployment Name: ic-deploy-devops
-
-• Replicas: 1
-
-• Labels: app=ic-devops
-
-• Init Container Name: ic-msg-devops
-
-• Main Container Name: ic-main-devops
-
-• Volume Name: ic-volume-devops (emptyDir)
-
-• Volume Mount Path: /ic
-
-• Init Container Function: Writes a message to /ic/official
-
-• Main Container Function: Reads and prints the message from /ic/official every 5 seconds
-
-
-
-
-
-Step 1: Deployment YAML
-
-
-
+```yaml
 apiVersion: apps/v1
-
 kind: Deployment
-
 metadata:
-
-&nbsp; name: ic-deploy-devops
-
+  name: ic-deploy-devops
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ic-devops
+  template:
+    metadata:
+      labels:
+        app: ic-devops
+    spec:
+      initContainers:
+        - name: ic-msg-devops
+          image: ubuntu:latest
+          command: ["/bin/bash", "-c", "echo Init Done - Welcome to xFusionCorp Industries > /ic/official"]
+          volumeMounts:
+            - name: ic-volume-devops
+              mountPath: /ic
+      containers:
+        - name: ic-main-devops
+          image: ubuntu:latest
+          command: ["/bin/bash", "-c", "while true; do cat /ic/official; sleep 5; done"]
+          volumeMounts:
+            - name: ic-volume-devops
+              mountPath: /ic
+      volumes:
+        - name: ic-volume-devops
+          emptyDir: {}
 
-&nbsp; replicas: 1
-
-&nbsp; selector:
-
-&nbsp;   matchLabels:
-
-&nbsp;     app: ic-devops
-
-&nbsp; template:
-
-&nbsp;   metadata:
-
-&nbsp;     labels:
-
-&nbsp;       app: ic-devops
-
-&nbsp;   spec:
-
-&nbsp;     initContainers:
-
-&nbsp;       - name: ic-msg-devops
-
-&nbsp;         image: ubuntu:latest
-
-&nbsp;         command: \["/bin/bash", "-c", "echo Init Done - Welcome to xFusionCorp Industries > /ic/official"]
-
-&nbsp;         volumeMounts:
-
-&nbsp;           - name: ic-volume-devops
-
-&nbsp;             mountPath: /ic
-
-&nbsp;     containers:
-
-&nbsp;       - name: ic-main-devops
-
-&nbsp;         image: ubuntu:latest
-
-&nbsp;         command: \["/bin/bash", "-c", "while true; do cat /ic/official; sleep 5; done"]
-
-&nbsp;         volumeMounts:
-
-&nbsp;           - name: ic-volume-devops
-
-&nbsp;             mountPath: /ic
-
-&nbsp;     volumes:
-
-&nbsp;       - name: ic-volume-devops
-
-&nbsp;         emptyDir: {}
+Save this as ic-deploy-devops.yml
 
 
-
-
-
-
-
-Step 2: Apply the Deployment
-
+🚀 Step 2: Apply the Deployment
 kubectl apply -f ic-deploy-devops.yml
 
 
-
-
-
-✅ Expected Output:
-
+Expected Output:
 deployment.apps/ic-deploy-devops created
 
 
-
-
-
-Step 3: Verify Pod Status
-
+📌 Step 3: Check Pod Status
 kubectl get pods
 
-You should see a pod running with a name like ic-deploy-devops-<hash>
 
-Status should be 1/1 Running
-
-
+You should see something like:
+ic-deploy-devops-xxxxx   1/1   Running
 
 
-
-Step 4: Verify Init Container Execution
-
+📝 Step 4: Verify Init Container Output
 kubectl logs <pod-name>
 
 
-
-
-
-Expected output:
-
+Expected logs:
 Init Done - Welcome to xFusionCorp Industries
 
+Repeated every 5 seconds by the main container.
 
 
-The message should repeat every 5 seconds as per the main container command.
-
-
-
-
-
-Step 5: Verify Shared Volume
-
+📂 Step 5: Verify Shared Volume Content
 kubectl exec -it <pod-name> -- cat /ic/official
 
 
-
-✅ Output:
-
+Expected:
 Init Done - Welcome to xFusionCorp Industries
 
-This confirms that the init container successfully created the file, and the main container is reading it.
+This confirms the init container successfully wrote the file, and the main container can access it.
 
 
+📘 Key Concepts Learned
+1. Init Containers
+   Run before the main container and perform setup tasks.
+
+2. emptyDir Volume
+   Provides temporary shared storage for all containers inside a pod.
+
+3. VolumeMounts
+   Ensures both containers access the same shared location.
+
+4. Accuracy Matters
+   Names and spec values must match exactly for automated task checkers.
 
 
-
-Key Concepts Learned:
-
-1]Init Containers: Run before the main container to perform setup tasks.
-
-2]emptyDir Volumes: Share temporary storage between init containers and main containers.
-
-3]VolumeMounts: Correctly mount volumes inside containers.
-
-4]Automation Compliance: Naming and spec must match exact task requirements for automated graders.
+⚠️ Common Issues & Fixes
+| Issue                            | Cause                | Fix                                             |
+| -------------------------------- | -------------------- | ----------------------------------------------- |
+| `unknown field "initcontainers"` | Wrong capitalization | Use `initContainers`                            |
+| `unknown field "volumeMount"`    | Wrong key name       | Use `volumeMounts`                              |
+| File missing in main container   | Volume not mounted   | Ensure same volume name used in both containers |
+| Task fails                       | Name mismatch        | Use exact names given in task                   |
 
 
+🎉 Conclusion
+This task demonstrates how init containers + emptyDir volumes can prepare required files before the main app starts. The setup is clean, stable, and recommended for pre-deployment configuration tasks.
 
 
-
-Common Issues \& Fixes:
-
-
-
-Issue	Cause	Fix
-
-unknown field initcontainers	Wrong case	Use initContainers (capital C)
-
-unknown field volumeMount	Wrong key	Use volumeMounts (plural)
-
-Pod logs empty / file not found	Volume not shared or mounted incorrectly	Ensure volumeMounts point to the same emptyDir volume in both containers
-
-Task failed in automated checker	Names mismatch	Use exact names: ic-msg-devops and ic-main-devops
-
-
-
-Conclusion:
-
-This task demonstrates how init containers can be used for pre-deployment configuration in Kubernetes. By using emptyDir volumes, the setup ensures that data created by the init container is available to the main container.
-
-
-
-
-
-✅ Outcome: Task completed successfully.
-
-
+✅ Outcome: Deployment with init container successfully implemented.
+Writes the message:
 

@@ -1,268 +1,112 @@
-1]We are working on an application that will be deployed on multiple containers within a pod on Kubernetes cluster. There is a requirement to share a volume among the containers to save some temporary data. The Nautilus DevOps team is developing a similar template to replicate the scenario. Below you can find more details about it.
+# Kubernetes Volume Sharing — Multi-Container Pod (emptyDir)
 
-1\. Create a pod named volume-share-datacenter.
+This guide demonstrates how to create a Kubernetes Pod with two containers that share a common `emptyDir` volume.  
+Files written in one container will instantly appear in the other.
 
-2\. For the first container, use image fedora with latest tag only and remember to mention the tag i.e fedora:latest, container should be named as volume-container-datacenter-1, and run a sleep command for it so that it remains in running state. Volume volume-share should be mounted at path /tmp/beta.
+---
 
-3\. For the second container, use image fedora with the latest tag only and remember to mention the tag i.e fedora:latest, container should be named as volume-container-datacenter-2, and again run a sleep command for it so that it remains in running state. Volume volume-share should be mounted at path /tmp/games.
+## 🎯 Objective
 
-4\. Volume name should be volume-share of type emptyDir.
+1. Create a Pod named **volume-share-datacenter**
+2. Add two containers:
+   - **volume-container-datacenter-1** → fedora:latest, mounts `/tmp/beta`
+   - **volume-container-datacenter-2** → fedora:latest, mounts `/tmp/games`
+3. Use a shared volume named **volume-share** of type `emptyDir`
+4. Keep both containers running using:  
+   `sleep infinity`
+5. Create a file in container 1 and verify that it appears in container 2
 
-5\. After creating the pod, exec into the first container i.e volume-container-datacenter-1, and just for testing create a file beta.txt with any content under the mounted path of first container i.e /tmp/beta.
+---
 
-6\. The file beta.txt should be present under the mounted path /tmp/games on the second container volume-container-datacenter-2 as well, since they are using a shared volume.
+## 📦 Correct Kubernetes Manifest (volume-share-datacenter.yaml)
 
-
-
-Note: The kubectl utility on jump\_host has been configured to work with the kubernetes cluster.
-
-
-
-->
-
-
-
-
-
-Kubernetes Task: Shared Volume Between Containers in a Pod
-
-
-
-Task Name:
-
-
-
-Volume Sharing in Multi-Container Pod
-
-
-
-
-
-Objective:
-
-Create a Kubernetes pod with two containers sharing an emptyDir volume, and verify that files created in one container are accessible in the other.
-
-
-
-
-
-Pod Details:
-
-
-
-Parameter	Value
-
-Pod Name	volume-share-datacenter
-
-Container 1	volume-container-datacenter-1
-
-Container 2	volume-container-datacenter-2
-
-Image	fedora:latest
-
-Volume Name	volume-share
-
-Volume Type	emptyDir
-
-Mount Paths	/tmp/beta (Container 1), /tmp/games (Container 2)
-
-Command	sleep infinity (keeps containers running)
-
-
-
-
-
-Initial YAML Configuration (with Error):
-
-
-
+```yaml
 apiVersion: v1
-
 kind: Pod
-
 metadata:
-
-&nbsp; name: volume-share-datacenter
-
+  name: volume-share-datacenter
 spec:
-
-&nbsp; containers:
-
-&nbsp;   - name: volume-container-datacenter-1
-
-&nbsp;     image: fedora:latest
-
-&nbsp;     command: \["sleep","infinity"]
-
-&nbsp;     VolumeMounts:   # ❌ Incorrect capitalization
-
-&nbsp;       - name: volume-share
-
-&nbsp;         mountPath: /tmp/beta
-
-
-
-&nbsp;   - name: volume-container-datacenter-2
-
-&nbsp;     image: fedora:latest
-
-&nbsp;     command: \["sleep","infinity"]
-
-&nbsp;     VolumeMounts:   # ❌ Incorrect capitalization
-
-&nbsp;       - name: volume-share
-
-&nbsp;         mountPath: /tmp/games
-
-
-
-&nbsp; volumes:
-
-&nbsp;   - name:volume-share  # ❌ Missing space after colon
-
-&nbsp;     emptyDir: {}
-
-
-
-
-
-Error Received:
-
-error parsing volume-share-datacenter.yml: 
-
-error converting YAML to JSON: yaml: line 23: mapping values are not allowed in this context
-
-
-
-
-
-Cause of Error:
-
-1]VolumeMounts key is incorrectly capitalized → should be volumeMounts.
-
-2]YAML is sensitive to indentation and spaces after colons.
-
-3]Minor spacing issue in - name:volume-share → should be - name: volume-share.
-
-
-
-
-
-Corrected YAML Configuration:
-
-
-
-apiVersion: v1
-
-kind: Pod
-
-metadata:
-
-&nbsp; name: volume-share-datacenter
-
-spec:
-
-&nbsp; containers:
-
-&nbsp;   - name: volume-container-datacenter-1
-
-&nbsp;     image: fedora:latest
-
-&nbsp;     command: \["sleep","infinity"]
-
-&nbsp;     volumeMounts:
-
-&nbsp;       - name: volume-share
-
-&nbsp;         mountPath: /tmp/beta
-
-
-
-&nbsp;   - name: volume-container-datacenter-2
-
-&nbsp;     image: fedora:latest
-
-&nbsp;     command: \["sleep","infinity"]
-
-&nbsp;     volumeMounts:
-
-&nbsp;       - name: volume-share
-
-&nbsp;         mountPath: /tmp/games
-
-
-
-&nbsp; volumes:
-
-&nbsp;   - name: volume-share
-
-&nbsp;     emptyDir: {}
-
-
-
-
-
-Steps to Execute:
-
-
-
-1]Apply the corrected pod manifest:
-
-kubectl apply -f volume-share-datacenter.yml
-
-
-
-
-
-2]Verify pod is running:
-
+  containers:
+    - name: volume-container-datacenter-1
+      image: fedora:latest
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: volume-share
+          mountPath: /tmp/beta
+
+    - name: volume-container-datacenter-2
+      image: fedora:latest
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: volume-share
+          mountPath: /tmp/games
+
+  volumes:
+    - name: volume-share
+      emptyDir: {}
+
+
+🚀 Step 1: Apply the Pod Manifest
+kubectl apply -f volume-share-datacenter.yaml
+
+
+Check pod status:
 kubectl get pods
 
 
-
-3]Exec into first container and create a test file:
-
+🚀 Step 2: Create File in Container 1
+Open a shell inside the first container:
 kubectl exec -it volume-share-datacenter -c volume-container-datacenter-1 -- bash
 
-echo "This is a test file for shared volume" > /tmp/beta/beta.txt
 
+Create the test file:
+echo "This is a test file for shared volume" > /tmp/beta/beta.txt
 ls -l /tmp/beta
 
 
+Exit container:
+exit
 
 
-
-4]Exec into second container and check file presence:
-
+🚀 Step 3: Verify File in Container 2
+Enter the second container:
 kubectl exec -it volume-share-datacenter -c volume-container-datacenter-2 -- bash
 
-ls -l /tmp/games
 
+Check shared volume:
+ls -l /tmp/games
 cat /tmp/games/beta.txt
 
 
+Expected output:
+This is a test file for shared volume
 
 
+🧠 Notes & Lessons Learned
+✔ Shared Volume Behavior
+emptyDir exists as long as the Pod is running
 
-Expected Result:
+Data is visible to all containers mounting the same volume
 
-1]File beta.txt created in /tmp/beta of container 1 appears in /tmp/games of container 2.
-
-2]Confirms that emptyDir volume is shared between containers in the same pod.
-
-
-
-Notes / Lessons Learned:
-
-1]YAML is case-sensitive. Always use volumeMounts (not VolumeMounts).
-
-2]Ensure proper indentation and spaces after colons.
-
-3]emptyDir volume is ephemeral, it exists only while the pod is running.
-
-4]This setup is useful for temporary data sharing between containers in the same pod.
+Useful for temporary file sharing between containers
 
 
+✔ YAML Best Practices
+Use correct key: volumeMounts (case-sensitive)
+
+Maintain proper spacing: name: volume-share
+
+Avoid indentation mistakes
 
 
+✅ Expected Result
 
+| Action                                   | Result                                               |
+| ---------------------------------------- | ---------------------------------------------------- |
+| Create file in `/tmp/beta` (container 1) | File instantly appears in `/tmp/games` (container 2) |
+| Volume type                              | emptyDir (ephemeral shared storage)                  |
+| Both containers running                  | Yes                                                  |
+
+
+🎉 You have successfully created a multi-container pod with a shared volume in Kubernetes!
+    

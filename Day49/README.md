@@ -1,198 +1,115 @@
-Deploy Applications with Kubernetes Deployments
+# 🚀 Deploy Applications with Kubernetes Deployments  
+## KodeKloud Task Documentation – HTTPD Deployment
 
+This document explains how the Nautilus DevOps team deployed an **httpd application** using a **Kubernetes Deployment** while troubleshooting YAML validation errors.
 
+---
 
-1]The Nautilus DevOps team is delving into Kubernetes for app management. One team member needs to create a deployment following these details:
+## 📌 Objective
 
-Create a deployment named httpd to deploy the application httpd using the image httpd:latest (ensure to specify the tag)
+Create a **Deployment** named `httpd` to deploy an application using the image:
 
-Note: The kubectl utility on jump\_host is set up to interact with the Kubernetes cluster.
+- **Image:** `httpd:latest`  
+- **Container name:** `httpd-container`  
+- **Label:** `app=httpd_app`  
 
+The `kubectl` utility on the jump_host is already configured to interact with the Kubernetes cluster.
 
+---
 
-->
+## 🛠️ Steps Followed
 
+---
 
+### **1. Initial Deployment YAML (Incorrect Version)**
 
-📘 KodeKloud Task Documentation – Deploy Application with Kubernetes Deployment
+The following YAML was applied initially but contained multiple errors:
 
-
-
-Task Objective:
-
-
-
-Create a Deployment named httpd to deploy the httpd application using the httpd:latest image.
-
-
-
-Requirements:
-
-1]Deployment name: httpd
-
-2]Container name: httpd-container
-
-3]Image: httpd:latest
-
-4]Label: app=httpd\_app
-
-
-
-
-
-Steps Followed:
-
-
-
-1]Initial Deployment YAML (with errors):
-
-
-
+```yaml
 appVersion: /apps/v1
-
 kind: Deployment
-
 metadata:
-
-  name: httpd
-
+  name: httpd
 spec:
-
-  replicas: 1
-
-  selector:
-
-    matchlabels:
-
-      app: httpd\_app
-
-  template:
-
-    metadata:
-
-      labels:
-
-        app: httpd\_app
-
-    spec:
-
-      containers:
-
-        - name: httpd-container
-
-          image: httpd:latest
+  replicas: 1
+  selector:
+    matchlabels:
+      app: httpd_app
+  template:
+    metadata:
+      labels:
+        app: httpd_app
+    spec:
+      containers:
+         - name: httpd-container
+          image: httpd:latest
 
 
-
-
-
-2]Applied the manifest:
-
+❌ Errors Encountered
+When applying:
 kubectl apply -f httpd-deployment.yaml
 
 
-
-
-
-❌ Error Encountered
-
-
-
+The following error occurred:
 error: error validating "httpd-deployment.yaml": error validating data: apiVersion not set
 
 
+🔍 Root Causes
+1. appVersion was incorrectly used → should be apiVersion
 
-Root Causes:
+2. matchlabels was incorrectly written → should be matchLabels (camelCase)
 
-1]matchlabels → should be matchLabels (camel case)
-
-
-
-
-
-✅ Resolution
-
-Corrected Deployment YAML:
+3. Wrong apiVersion format
 
 
+✅ 2. Corrected Deployment YAML
+After fixing all errors, the correct manifest is:
 
 apiVersion: apps/v1
-
 kind: Deployment
-
 metadata:
-
-  name: httpd
-
+  name: httpd
 spec:
-
-  replicas: 1
-
-  selector:
-
-    matchLabels:
-
-      app: httpd\_app
-
-  template:
-
-    metadata:
-
-      labels:
-
-        app: httpd\_app
-
-    spec:
-
-      containers:
-
-        - name: httpd-container
-
-          image: httpd:latest
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpd_app
+  template:
+    metadata:
+      labels:
+        app: httpd_app
+    spec:
+      containers:
+        - name: httpd-container
+          image: httpd:latest
 
 
+📥 3. Apply the Correct Configuration
+kubectl apply -f httpd-deployment.yaml
 
 
-
-3]Apply corrected manifest:
-
- kubectl apply -f httpd-deployment.yaml
-
-
-
-
-
-4]Verification
-
-Check deployment status:
-
+🔎 4. Verification Steps
+Check deployment status
 kubectl get deployment httpd
 
 
+Check pods created by the deployment
+kubectl get pods -l app=httpd_app
 
 
-
-5]Check pods created by deployment:
-
-kubectl get pods -l app=httpd\_app
-
-
-
-6]Describe deployment (for detailed info):
-
+Describe deployment for detailed information
 kubectl describe deployment httpd
 
 
+🎉 Final Outcome
+✅ The httpd deployment was successfully created.
 
+✅ Pod(s) are running using httpd:latest.
 
+✅ YAML structural and spelling errors were corrected.
 
-Final Outcome:
+✅ Deployment verified using kubectl get and kubectl describe.
 
-1]Deployment httpd successfully created.
-
-2]Pod(s) running httpd:latest image.
-
-3]YAML errors fixed.
-
-4]Verified using kubectl get and kubectl describe.
-
+   
+        - name: httpd-container
+          image: httpd:latest

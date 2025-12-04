@@ -1,270 +1,124 @@
-Set Up Jenkins Server
+# Set Up Jenkins Server
+
+## 📝 Task Overview
+Install and configure Jenkins on the designated Jenkins host using **yum**, then create the required admin user via the Jenkins UI.
+
+---
+
+## 🔧 Prerequisites
+
+- Access to Jenkins server through the jump host:
 
 
-
-1]The DevOps team at xFusionCorp Industries is initiating the setup of CI/CD pipelines and has decided to utilize Jenkins as their server. Execute the task according to the provided requirements:
-
-
-
-1\. Install Jenkins on the jenkins server using the yum utility only, and start its service.
-
-&nbsp;	• If you face a timeout issue while starting the Jenkins service, refer to this.
-
-2\. Jenkin's admin user name should be theadmin, password should be Adm!n321, full name should be Mark and email should be mark@jenkins.stratos.xfusioncorp.com.
-
-
-
-Note:
-
-1\. To access the jenkins server, connect from the jump host using the root user with the password S3curePass.
-
-2\. After Jenkins server installation, click the Jenkins button on the top bar to access the Jenkins UI and follow on-screen instructions to create an admin user.
-
-
-
-
-
-->
-
-
-
-Task: Jenkins Installation and Admin User Setup
-
-
-
-Objective:
-
-Set up Jenkins as the CI/CD server on the designated Jenkins host, ensuring it is installed via yum, running as a service, and configured with a specific admin user.
-
-
-
-
-
-Prerequisites:
-
-1]Access the Jenkins server from the jump host as root with password: S3curePass.
-
-2]Internet access on the Jenkins server.
-
-3]Required tools: wget, rpm, yum.
-
-
-
-
-
-Step 1: Connect to Jenkins Server
-
-ssh root@<jenkins\_server\_ip>
-
-
-
+Username: root
 Password: S3curePass
 
 
+- Internet access on the Jenkins server
+- Tools required: `wget`, `rpm`, `yum`
+
+---
+
+## 🚀 Step 1: Connect to the Jenkins Server
+
+```bash
+ssh root@<jenkins_server_ip>
+# Password: S3curePass
 
 
-
-Step 2: Add Jenkins Repository
-
+📦 Step 2: Add Jenkins Repository
 wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
-
 rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
 
+This allows yum to fetch Jenkins packages.
 
 
-This ensures yum can find the Jenkins package.
-
-
-
-
-
-
-
-Step 3: Install Dependencies
-
+📚 Step 3: Install Dependencies (Java)
 yum install -y fontconfig java-21-openjdk
-
-
 
 Jenkins requires Java 21 to run properly.
 
 
-
-
-
-
-
-Step 4: Install Jenkins
-
+🏗️ Step 4: Install Jenkins
 yum install -y jenkins
 
-
-
-If yum cannot find Jenkins, verify the repo is added correctly.
-
-
-
-If you get an error related to the GPG key, you can bypass it using:
-
-
-
+If GPG check fails:
 yum install -y jenkins --nogpgcheck
 
 
-
-This ensures Jenkins installs even if the repository key verification fails. Always verify the key source is trusted when using --nogpgcheck.
-
-
-
-
-
-
-
-Step 5: Start and Enable Jenkins Service
-
+▶️ Step 5: Start & Enable Jenkins Service
 systemctl start jenkins
-
 systemctl enable jenkins
-
 systemctl status jenkins
 
 
-
-Service should show active (running).
-
-Jenkins runs on port 8080 by default.
-
-
-
-
-
-If timeout occurs:
-
-Check firewall and open port 8080:
-
-
-
+If Jenkins fails to start due to timeout:
 firewall-cmd --permanent --add-port=8080/tcp
-
 firewall-cmd --reload
-
-
-
-
-
-Inspect logs for errors:
-
 journalctl -xeu jenkins
 
 
+🌐 Step 6: Access Jenkins UI
+1. Open browser:
+http://<jenkins_server_ip>:8080
 
 
-
-
-
-Step 6: Access Jenkins UI
-
-1]Open a browser:
-
-http://<jenkins\_server\_ip>:8080
-
-
-
-2]Retrieve the initial admin password:
-
+2. Retrieve initial admin password:
 cat /var/lib/jenkins/secrets/initialAdminPassword
 
+Enter this password in Jenkins Setup Wizard.
 
 
+👤 Step 7: Create Admin User
+Fill the fields as follows:
+
+| Field     | Value                                                                               |
+| --------- | ----------------------------------------------------------------------------------- |
+| Username  | theadmin                                                                            |
+| Password  | Adm!n321                                                                            |
+| Full Name | Mark                                                                                |
+| Email     | [mark@jenkins.stratos.xfusioncorp.com](mailto:mark@jenkins.stratos.xfusioncorp.com) |
+
+Complete the setup wizard.
 
 
-3]Enter this password on the Jenkins setup page.
-
-
-
-
-
-Step 7: Create Admin User
-
-
-
-Field	Value
-
-Username	theadmin
-
-Password	Adm!n321
-
-Full Name	Mark
-
-Email	mark@jenkins.stratos.xfusioncorp.com
-
-
-
-Complete the on-screen setup wizard to finalize Jenkins configuration.
-
-
-
-
-
-
-
-Step 8: Verify Jenkins Setup
-
-
-
+✔️ Step 8: Verify Jenkins Setup
 systemctl start jenkins
-
-Systemctl enable jenkins
-
-Systemctl status jenkins
+systemctl enable jenkins
+systemctl status jenkins
 
 
+Ensure:
+1. Jenkins service is active
+2. Login works using the theadmin credentials
 
 
+⚠️ Common Issues & Fixes
+1️⃣ Timeout when starting Jenkins
 
-1]Ensure the service is running.
+1. Check system resources (RAM/CPU)
+2. Ensure port 8080 is open
 
-2]Confirm login works with the created admin user.
-
-
-
-
-
-Common Issues:
-
-1]Timeout while starting Jenkins:
-
-i]Verify system memory and CPU availability.
-
-ii]Ensure firewall allows port 8080.
-
-iii]Use journalctl -xeu jenkins to debug.
+Check logs:
+journalctl -xeu jenkins
 
 
-
-2]Wrong Java version installed:
-
+2️⃣ Wrong Java version installed
 Remove incorrect version:
-
 yum remove java-11-openjdk
 
 
-
-Install Java 21:
-
-yum install java-21-openjdk
+Reinstall correct version:
+yum install -y java-21-openjdk
 
 
+🎯 Final Outcome:
+✔ Jenkins installed using yum
 
+✔ Jenkins service running on port 8080
 
+✔ Admin user theadmin created successfully
 
-Outcome:
-
-1]Jenkins installed and running via yum.
-
-2]Admin user theadmin configured successfully.
-
-3]Jenkins ready for CI/CD pipeline deployment.
-
+✔ Server ready for CI/CD pipeline configuration
 
 

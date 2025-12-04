@@ -1,194 +1,124 @@
-Write a Docker Compose File
+# Host Static Website on HTTPD using Docker Compose
+
+This documentation explains the setup and deployment of an HTTPD container using Docker Compose on **App Server 2 (Stratos DC)**, as per Nautilus DevOps task requirements.
+
+---
+
+## 📌 Task Requirements
+
+1. Create a Docker Compose file at:
+/opt/docker/docker-compose.yml
 
 
 
-1]
+2. Deploy a container named **httpd** using **httpd:latest** image.  
+3. Map **host port 3000** → **container port 80**.  
+4. Mount host directory **/opt/itadmin** → **/usr/local/apache2/htdocs** (Apache document root).  
+5. Use Docker Compose (service name can be anything).
 
-The Nautilus application development team shared static website content that needs to be hosted on the httpd web server using a containerised platform. The team has shared details with the DevOps team, and we need to set up an environment according to those guidelines. Below are the details:
+---
 
+## 📝 Docker Compose File  
+**Correct file:** `/opt/docker/docker-compose.yml`
 
-
-a. On App Server 2 in Stratos DC create a container named httpd using a docker compose file /opt/docker/docker-compose.yml (please use the exact name for file).
-
-
-
-b. Use httpd (preferably latest tag) image for container and make sure container is named as httpd; you can use any name for service.
-
-
-
-c. Map 80 number port of container with port 3000 of docker host.
-
-
-
-d. Map container's /usr/local/apache2/htdocs volume with /opt/itadmin volume of docker host which is already there. (please do not modify any data within these locations).
-
-
-
-->
-
-
-
-Hosting Static Website on HTTPD Container using Docker Compose
-
-
-
-Server: App Server 2, Stratos DC
-
-Task: Host static website content on httpd using a containerized platform
-
-
-
-Task Requirements
-
-1]Create a container named httpd using a Docker Compose file located at /opt/docker/docker-compose.yml.
-
-2]Use httpd:latest image.
-
-3]Map container port 80 to host port 3000.
-
-4]Map container volume /usr/local/apache2/htdocs to host volume /opt/itadmin (pre-existing).
-
-5]Use Docker Compose for container orchestration.
-
-
-
-&nbsp;Docker Compose File
-
-
-
-Correct YAML (/opt/docker/docker-compose.yml):
-
-
-
+```yaml
 version: "3"
 
 services:
+  web:
+    image: httpd:latest
+    container_name: httpd
+    ports:
+      - "3000:80"
+    volumes:
+      - /opt/itadmin:/usr/local/apache2/htdocs
+    restart: always
 
-&nbsp; web:
 
-&nbsp;   image: httpd:latest
+🧩 Explanation of Compose Fields
+1. services.web:
+   Arbitrary service name (web is used here).
 
-&nbsp;   container\_name: httpd
+2. image:
+   Pulls the latest httpd image.
 
-&nbsp;   ports:
+3. container_name:
+   Names the container httpd (required).
 
-&nbsp;     - "3000:80"
+4. ports:
+   Maps 3000 → 80 for web access.
 
-&nbsp;   volumes:
+5. volumes:
+   Maps host folder /opt/itadmin to Apache document root.
 
-&nbsp;     - /opt/itadmin:/usr/local/apache2/htdocs
+6. restart: always:
+   Ensures container restarts after reboot or failure.
 
-&nbsp;   restart: always
 
+🚀 Commands Used
+1️⃣ Navigate to directory
+cd /opt/docker
 
 
+2️⃣ Bring down old containers (if any)
+docker compose down
 
 
-Explanation of fields:
+3️⃣ Start container using Docker Compose
+docker compose -f /opt/docker/docker-compose.yml up -d
 
-1]services.web: Service name; can be any name (web used here).
+Note: docker compose (with space) is used because modern Docker versions use Compose V2.
+docker-compose (hyphen) is deprecated.
 
-2]image: Pulls the latest HTTPD server image.
 
-3]container\_name: Ensures the container is named httpd (mandatory for the task).
+4️⃣ Verify running container
+docker ps
 
-4]ports: Maps host port 3000 → container port 80.
 
-5]volumes: Maps host directory /opt/itadmin → container web root /usr/local/apache2/htdocs.
+5️⃣ Verify volume mount
+docker exec -it httpd ls /usr/local/apache2/htdocs
 
-6]restart: always: Ensures the container restarts automatically after host reboot.
 
+6️⃣ Test website access
+curl http://localhost:3000
 
 
+⚠️ Errors Faced & Lessons Learned
+❌ 1. Incorrect Key: docker_container
+Error:
+-bash: docker-compose: command not found
 
+Fix:
+Use container_name: instead.
 
-Commands used:
 
+❌ 2. Wrong Command: docker-compose
+Error:
+-bash: docker-compose: command not found
 
+Reason:
+Docker Compose V2 uses docker compose.
 
-Step:1]Navigate to the docker directory
 
-&nbsp;          cd /opt/docker
+❌ 3. Wrong Volume Path (from earlier attempts)
 
+Wrong: /opt/devops
 
+Correct: /opt/itadmin
 
-Step:2]Bring down any existing containers (if present)
+Lesson: Exact paths matter — graders verify them strictly.
 
-&nbsp;          docker compose down
 
+🎉 Final Outcome
 
+HTTPD container httpd deployed successfully.
 
-Step:3]Start container using Docker Compose
+Static website content hosted via volume /opt/itadmin.
 
-&nbsp;          docker compose -f /opt/docker/docker-compose.yml up -d
+Accessible at:
+http://<server-ip>:3000
 
 
-
-Explanation:
-
-1]Initially, docker-compose up -d was attempted.
-
-2]Error encountered: -bash: docker-compose: command not found
-
-
-
-Reason: Recent Docker versions include Docker Compose V2, which uses docker compose (space) instead of docker-compose.
-
-
-
-3]The command docker compose -f /opt/docker/docker-compose.yml up -d explicitly points to the Compose file and starts the container in detached mode.
-
-
-
-Step:4]Verify container is running
-
-&nbsp;           docker ps
-
-
-
-Step:5]Verify volume mount
-
-&nbsp;          docker exec -it httpd ls /usr/local/apache2/htdocs
-
-
-
-Step:6]Test website access
-
-&nbsp;         curl http://localhost:3000
-
-
-
-
-
-Errors Faced \& Lessons Learned:
-
-Incorrect Compose property:
-
-1]Mistake: Used docker\_container: instead of container\_name:.
-
-2]Effect: Docker Compose reported additional properties 'docker\_container' not allowed.
-
-3]Lesson: Use container\_name for naming containers in Compose.
-
-
-
-Docker Compose command not found:
-
-1]Mistake: Used docker-compose up -d
-
-2]Effect: command not found because Docker Compose V2 uses docker compose (space).
-
-3]Lesson: Always check Docker Compose version with docker compose version before running commands.
-
-
-
-Volume mismatch (in previous lab attempt):
-
-1]Mistake: Used wrong host volume path (e.g., /opt/devops instead of /opt/itadmin).
-
-2]Effect: Task failed because KodeKloud grader checks exact host paths.
-
-3]Lesson: Always cross-verify host paths in task instructions.
-
+Deployment validated via Docker Compose and curl testing.
 
 

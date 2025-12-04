@@ -1,86 +1,80 @@
-Execute Rolling Updates in Kubernetes
+# 🚀 Rolling Update for Nginx Deployment  
+### Updating `nginx-deployment` to Image `nginx:1.17`
 
+This document outlines the steps performed to apply a rolling update to the Kubernetes Deployment **nginx-deployment**, updating its container image to **nginx:1.17** while ensuring zero downtime.
 
+---
 
-1]An application currently running on the Kubernetes cluster employs the nginx web server. The Nautilus application development team has introduced some recent changes that need deployment. They've crafted an image nginx:1.17 with the latest updates.
+## 📌 Objective
 
-Execute a rolling update for this application, integrating the nginx:1.17 image. The deployment is named nginx-deployment.
+The Nautilus application team released a new version of the Nginx-based application using the image **nginx:1.17**.  
+The goal was to update the deployment in a rolling fashion and ensure all pods are running and stable after the update.
 
-Ensure all pods are operational post-update.
+The `kubectl` client on the jump_host is already configured to communicate with the Kubernetes cluster.
 
-Note: The kubectl utility on jump\_host is set up to operate with the Kubernetes cluster
+---
 
+## 🛠️ Steps Performed
 
+---
 
-->
+### **1. Verify Existing Deployment**
 
-
-
-Task Name: Rolling Update for Nginx Deployment
-
-
-
-Objective:
-
-Update the nginx-deployment to use the new image nginx:1.17 while ensuring zero downtime and all pods remain operational.
-
-
-
-
-
-Steps Performed:
-
-1]Verified Existing Deployment
-
+```sh
 kubectl get deployments
-
 kubectl describe deployment nginx-deployment
 
-Confirmed the deployment nginx-deployment exists and the current image in use.
+
+Confirmed that the nginx-deployment exists.
+Checked the current container image being used.
 
 
-
-2]Performed Rolling Update
-
+2. Execute Rolling Update
 kubectl set image deployment/nginx-deployment nginx-container=nginx:1.17
 
-Updated the container image to nginx:1.17 in a rolling update fashion.
+
+Updated the container image to nginx:1.17.
+
+Kubernetes automatically triggered a rolling update.
 
 
 
-3]Monitored Update Progress
-
+3. Monitor Rollout Progress
 kubectl rollout status deployment/nginx-deployment
 
-Ensured all pods were updated successfully and became Ready.
+
+Ensured all pods updated successfully.
+
+Waited until the deployment reached the "successfully rolled out" status.
 
 
-
-4]Verified Updated Pods and Image
-
-Kubectl get pods
-
-Kubectl describe pod nginx-deployment
-
-Confirmed all pods are running the new image nginx:1.17.
+4. Verify Updated Pods
+kubectl get pods
+kubectl describe pod <pod-name>
 
 
+Confirmed the pods are running with the new image.
 
-Outcome:
-
-1]The nginx-deployment was successfully updated to nginx:1.17.
-
-2]Rolling update ensured zero downtime.
-
-3]All pods are operational post-update.
+Verified all pods are in Running and Ready state.
 
 
+✅ Outcome
+The nginx-deployment was successfully updated to nginx:1.17.
 
-Benefits:
+Rolling update occurred with zero downtime.
 
-1]Deployment updates without disrupting the application.
+All pods are healthy and operational after the update.
 
-2]Ensures new features and bug fixes from the updated image are live.
+
+💡 Benefits of Rolling Updates
+
+No service interruption during deployment.
+
+Gradual update ensures stability and smooth transitions.
+
+Ability to roll back instantly if issues occur.
+
+
 
 
 
