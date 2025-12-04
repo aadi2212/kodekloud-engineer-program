@@ -1,120 +1,128 @@
-Git Merge Branches
+# Git Merge Branches – News Repo | KodeKloud Task
 
+## 📌 Task Overview
 
+The Nautilus application development team required the following operations on the repository `/opt/news.git` (cloned at `/usr/src/kodekloudrepos/news`):
 
-1]
+**Objective:**
 
-The Nautilus application development team has been working on a project repository /opt/news.git. This repo is cloned at /usr/src/kodekloudrepos on storage server in Stratos DC. They recently shared the following requirements with DevOps team:
+* Create a new branch `xfusion` from `master`
+* Copy `/tmp/index.html` into the new branch and commit it
+* Merge the `xfusion` branch back into `master`
+* Push changes for both branches to the remote
 
+---
 
+## 🏁 Steps Performed
 
+### 1️⃣ Log in to Storage Server
 
+```bash
+ssh natasha@172.16.238.15
+```
 
-Create a new branch xfusion in /usr/src/kodekloudrepos/news repo from master and copy the /tmp/index.html file (present on storage server itself) into the repo. Further, add/commit this file in the new branch and merge back that branch into master branch. Finally, push the changes to the origin for both of the branches.
+---
 
+### 2️⃣ Navigate to Repository
 
+```bash
+sudo cd /usr/src/kodekloudrepos/news
+```
 
-->
+---
 
+### 3️⃣ Ensure Repository is Trusted
 
-
-Steps to Complete the Task:
-
-1]Log in to the Storage Server.
-
-&nbsp;ssh natasha@172.16.238.15
-
-
-
-2]Navigate to the repository.
-
-&nbsp;sudo cd /usr/src/kodekloudrepos/news
-
-
-
-3]Ensure repo is trusted (fix for dubious ownership, if needed).
-
+```bash
 git config --global --add safe.directory /usr/src/kodekloudrepos/news
+```
 
+---
 
+### 4️⃣ Switch to Master Branch and Update
 
-4]Switch to master branch
+```bash
+sudo git checkout master
+sudo git pull origin master
+```
 
-&nbsp;sudo git checkout master
+---
 
-&nbsp;sudo git pull origin master
+### 5️⃣ Create and Switch to New Branch `xfusion`
 
-
-
-5]Create and switch to new branch xfusion
-
+```bash
 git checkout -b xfusion
+```
 
+---
 
+### 6️⃣ Copy File into Repository
 
-6]Copy the file into the repo
-
-&nbsp;sudo cp /tmp/index.html .
-
-
-
-7]Verify:
-
+```bash
+sudo cp /tmp/index.html .
 ls -l index.html
+```
 
+---
 
+### 7️⃣ Stage and Commit Changes
 
-8]Stage and commit the file
-
+```bash
 sudo git add index.html
-
 sudo git commit -m "Added index.html file in xfusion branch"
+```
 
+---
 
+### 8️⃣ Push New Branch to Remote
 
-9]Push the new branch to origin
-
+```bash
 git push origin xfusion
+```
 
+---
 
+### 9️⃣ Switch Back to Master Branch
 
-10]Switch back to master branch
-
+```bash
 git checkout master
+```
 
+---
 
+### 10️⃣ Merge `xfusion` Branch into Master
 
-11]Merge xfusion branch into master
-
+```bash
 git merge xfusion
+```
 
+---
 
+### 11️⃣ Push Updated Master to Remote
 
-12]Push updated master to origin
-
+```bash
 git push origin master
+```
 
+---
 
-
-
-
-✅ Final Verification
+## ✅ Final Verification
 
 Check branches:
 
+```bash
 git branch -a
+```
 
+Expected output:
 
+```
+* master
+  xfusion
+  remotes/origin/master
+  remotes/origin/xfusion
+```
 
-\* master
+---
 
-&nbsp; xfusion
-
-&nbsp; remotes/origin/master
-
-&nbsp; remotes/origin/xfusion
-
-
-
-
-
+# End of Documentation
