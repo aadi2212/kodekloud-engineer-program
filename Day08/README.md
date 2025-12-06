@@ -1,51 +1,79 @@
-Install Ansible
+# Ansible Installation – Jump Host (Stratos DC)
 
-1]During the weekly meeting, the Nautilus DevOps team discussed about the automation and configuration management solutions that they want to implement. While considering several options, the team has decided to go with Ansible for now due to its simple setup and minimal pre-requisites. The team wanted to start testing using Ansible, so they have decided to use jump host as an Ansible controller to test different kind of tasks on rest of the servers.
+## 📌 Task Overview
 
+The Nautilus DevOps team has decided to implement **Ansible** for automation and configuration management.
 
-Install ansible version 4.8.0 on Jump host using pip3 only. Make sure Ansible binary is available globally on this system, i.e all users on this system are able to run Ansible commands.
+**Objective:**
 
-->
+* Install Ansible version 4.8.0 using `pip3`
+* Ensure Ansible is globally accessible for all users on the Jump Host
 
+---
 
-Here’s how you can complete it step-by-step:
+## 🛠 Step-by-Step Execution
 
-1️⃣ Install pip3 if not already installed
+### 1️⃣ Install pip3 (if not already installed)
 
-  sudo yum install python3-pip -y   #For RHEL/CentOS
+**For RHEL/CentOS:**
 
- sudo apt install python3-pip -y   #For Ubuntu/Debian
+```bash
+sudo yum install python3-pip -y
+```
 
+**For Ubuntu/Debian:**
 
-2️⃣ Install Ansible 4.8.0 using pip3 (system-wide)
+```bash
+sudo apt install python3-pip -y
+```
 
-Since they want it globally available for all users, don’t install in --user mode — install with sudo:
+---
 
- sudo pip3 install ansible=4.0.8
+### 2️⃣ Install Ansible 4.8.0 System-wide
 
+```bash
+sudo pip3 install ansible==4.8.0
+```
 
-3️⃣ Verify installation
+> ⚡ Note: Do not use `--user` mode, as Ansible needs to be available globally for all users.
 
-Check the installed version:
+---
 
- ansible --version
+### 3️⃣ Verify Ansible Installation
 
+```bash
+ansible --version
+```
 
-You should see:
+**Expected Output:**
+
+```
 ansible [core 2.11.x]
-  
+```
 
-4️⃣ Ensure binary is globally accessible
+---
 
-Pip’s global bin path should already be in $PATH. Usually, for global installs:
-	• On RHEL/CentOS: /usr/local/bin
-	• On Ubuntu/Debian: /usr/local/bin
+### 4️⃣ Ensure Ansible Binary is Globally Accessible
 
+Global bin paths for pip installs:
 
-Check:
+* RHEL/CentOS: `/usr/local/bin`
+* Ubuntu/Debian: `/usr/local/bin`
 
- which ansible
-<img width="918" height="1152" alt="image" src="https://github.com/user-attachments/assets/ce559066-0763-4347-a6c2-ee3b7eb0acb2" />
+Check binary location:
 
+```bash
+which ansible
+```
 
+* Should return the path where Ansible is installed (e.g., `/usr/local/bin/ansible`)
 
+---
+
+## ✅ Final Outcome
+
+* Ansible 4.8.0 installed successfully on Jump Host
+* Binary is accessible globally for all users
+* Ready to execute automation tasks across servers ✅
+
+# End of Documentation

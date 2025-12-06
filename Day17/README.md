@@ -1,202 +1,116 @@
-Install and Configure PostgreSQL
+# PostgreSQL Database Setup – Nautilus Stratos DC
 
+## 📌 Task Overview
 
+The Nautilus application development team plans to deploy a new application requiring **PostgreSQL**. The task was to configure PostgreSQL database and user as per requirements.
 
-1]The Nautilus application development team has shared that they are planning to deploy one newly developed application on Nautilus infra in Stratos DC. The application uses PostgreSQL database, so as a pre-requisite we need to set up PostgreSQL database server as per requirements shared below: PostgreSQL database server is already installed on the Nautilus database server. 
+**Objective:**
 
+* PostgreSQL server is already installed on **stdb01**
+* Create a database user `kodekloud_joy` with password `LQfKeWWxWD`
+* Create a database `kodekloud_db5`
+* Grant full privileges to `kodekloud_joy` on `kodekloud_db5`
+* ⚠️ Do not restart PostgreSQL service
 
+---
 
-a. Create a database user kodekloud\_joy and set its password to "LQfKeWWxWD".
+## 🛠 Step-by-Step Execution
 
+### 1️⃣ Login to DB Server
 
-
-b. Create a database kodekloud\_db5 and grant full permissions to user kodekloud\_joy on this database.
-
-
-
-
-
-Note: Please do not try to restart PostgreSQL server service.
-
-
-
-->
-
-
-
-
-
-📝 PostgreSQL Database Setup – Stratos DC
-
-
-
-Task Requirement:
-
-
-
-1]PostgreSQL server is already installed on stdb01.
-
-2]Create a database user kodekloud\_joy with password LQfKeWWxWD.
-
-3]Create a database kodekloud\_db5.
-
-4]Grant full permissions on this DB to kodekloud\_joy.
-
-5]⚠️ Do not restart PostgreSQL service.
-
-
-
-
-
-Steps Taken:
-
-
-
-1\. Login to DB Server
-
-From jump host:
-
+```bash
 ssh peter@stdb01
-
-
-
-Switch to postgres system user:
-
 sudo su - postgres
-
 psql
+```
 
+---
 
+### 2️⃣ Create Database User
 
+```sql
+CREATE USER kodekloud_joy WITH PASSWORD 'LQfKeWWxWD';
+```
 
+**Verify user creation:**
 
-2\. Create Database User
+```sql
+\du
+# Should list kodekloud_joy ✅
+```
 
-CREATE USER kodekloud\_joy WITH PASSWORD 'LQfKeWWxWD';
+---
 
+### 3️⃣ Create Database
 
+**Common Mistake:** Forgot semicolon
 
-Verified user:
+```sql
+CREATE DATABASE kodekloud_db5
+-- Waiting for more input (postgres-# prompt)
+```
 
-\\du
+**Correct command:**
 
+```sql
+CREATE DATABASE kodekloud_db5;
+```
 
+**Verify database creation:**
 
-(User kodekloud\_joy listed ✅)
+```sql
+\l
+# Should list kodekloud_db5 ✅
+```
 
+---
 
+### 4️⃣ Grant Privileges
 
+```sql
+GRANT ALL PRIVILEGES ON DATABASE kodekloud_db5 TO kodekloud_joy;
+```
 
+**Verification:**
 
-3\. Mistake While Creating Database
+```sql
+\du   # Check user exists
+\l    # Check database ownership and access
+```
 
-Initially, I typed without semicolon:
+---
 
+### 5️⃣ Test Connection
 
+```bash
+psql -U kodekloud_joy -d kodekloud_db5 -h localhost
+# Password: LQfKeWWxWD
+```
 
-CREATE DATABASE kodekloud\_db5
+Prompt should appear as:
 
+```text
+kodekloud_db5=>
+```
 
+✅ Successful login confirms setup is correct.
 
-This made Postgres wait for more input (postgres-# prompt).
+---
 
-Then I mistakenly typed another CREATE DATABASE inside it →
+## 🐞 Troubleshooting Notes
 
+* ❌ Forgot semicolon after SQL statements → PostgreSQL went into multiline mode
+* ❌ Entered second `CREATE DATABASE` inside unfinished command → syntax error
+* ✅ Fixed by canceling with `Ctrl+C` and re-running commands correctly
+* ✅ User and database created, privileges granted, connection verified
 
+---
 
-Error:
+## ✅ Final Outcome
 
-syntax error at or near "CREATE"
+* PostgreSQL user `kodekloud_joy` created
+* Database `kodekloud_db5` created
+* Full privileges granted to `kodekloud_joy`
+* Verified login and database access without restarting PostgreSQL service
 
-Finally, after typing ; it executed nothing valid, so database was not created.
-
-
-
-
-
-4\. Correct Database Creation
-
-CREATE DATABASE kodekloud\_db5;
-
-
-
-Verified:
-
-\\l
-
-
-
-(Database kodekloud\_db5 listed ✅)
-
-
-
-
-
-5\. Grant Permissions
-
-GRANT ALL PRIVILEGES ON DATABASE kodekloud\_db5 TO kodekloud\_joy;
-
-
-
-
-
-6\. Verification
-
-Users:
-
-
-
-\\du
-
-(Confirmed kodekloud\_joy)
-
-
-
-
-
-7]Databases:
-
-\\l
-
-(Confirmed kodekloud\_db5 owned and accessible)
-
-
-
-
-
-8]Test connection (on stdb01):
-
-psql -U kodekloud\_joy -d kodekloud\_db5 -h localhost
-
-
-
-Password: LQfKeWWxWD
-
-
-
-Prompt:
-
-
-
-kodekloud\_db5=>
-
-
-
-✅ Successful login.
-
-
-
-
-
-Troubleshooting Notes
-
-&nbsp;	• ❌ Forgot ; after SQL statements → Postgres went into multiline mode.
-
-&nbsp;	• ❌ Entered second CREATE DATABASE inside unfinished command → syntax error.
-
-&nbsp;	• ✅ Fixed by canceling with Ctrl+C and rerunning with proper semicolon.
-
-&nbsp;	• ✅ User \& DB created, privileges granted, connection verified.
-
-
-
+# End of Documentation

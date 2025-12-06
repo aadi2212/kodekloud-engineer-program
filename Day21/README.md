@@ -1,112 +1,81 @@
-Set Up Git Repository on Storage Server
+# Set Up Git Repository on Storage Server – Nautilus Task
 
+## 📌 Task Overview
 
+The Nautilus development team requires a **new Git repository** for an application project on the Storage Server in Stratos DC.
 
-1]
+**Objective:**
 
-The Nautilus development team has provided requirements to the DevOps team for a new application development project, specifically requesting the establishment of a Git repository. Follow the instructions below to create the Git repository on the Storage server in the Stratos DC:
+* Install Git on the Storage Server
+* Create a **bare repository** at `/opt/beta.git`
 
-&nbsp;	1. Utilize yum to install the git package on the Storage Server.
+**Environment:**
 
-&nbsp;	2. Create a bare repository named /opt/beta.git (ensure exact name usage).
+* Storage Server (Stratos DC)
+* User: natasha
+* Repository path: `/opt/beta.git`
 
-->
+---
 
+## 🏁 Steps Performed
 
+### 1️⃣ SSH into the Storage Server
 
-📘 Documentation: Set Up Git Repository on Storage Server
-
-
-
-🎯 Objective
-
-
-
-The Nautilus development team requested a Git repository setup for a new application project.
-
-Requirements:
-
-
-
-1]Install git on the Storage Server.
-
-2]Create a bare repository at /opt/beta.git.
-
-
-
-Steps to Complete:
-
-
-
-Step 1: SSH into Storage Server
-
+```bash
 ssh natasha@ststor01
+```
 
+---
 
+### 2️⃣ Install Git
 
-Step 2: Install Git
-
+```bash
 sudo yum install -y git
+```
 
+> Verify installation:
 
-
-
-
-Verify installation:
-
+```bash
 git --version
+```
 
+---
 
+### 3️⃣ Create Bare Repository
 
-
-
-Step 3: Create Bare Repository
-
+```bash
 sudo mkdir -p /opt/beta.git
-
 sudo git init --bare /opt/beta.git
+```
 
+> Expected output:
 
-
-
-
-Output should show:
-
+```
 Initialized empty Git repository in /opt/beta.git/
+```
 
+---
 
+### 4️⃣ Verify Repository Structure
 
-
-
-Step 4: Verify
-
-Check inside the repo:
-
-
-
+```bash
 ls /opt/beta.git
+```
 
-You should see folders like branches, hooks, info, objects, refs.
+> You should see directories like: `branches`, `hooks`, `info`, `objects`, `refs`
 
+---
 
+## ✅ Final Outcome
 
+1. Git installed on the Storage Server.
+2. Bare Git repository created at `/opt/beta.git`.
+3. Repository ready for the development team to **clone and push code**.
 
+---
 
-✅ Final Outcome
+⚡ **Note:** Bare repositories are central repositories shared by teams. They **do not contain a working directory**, only Git history.
 
-1]git installed on Storage Server.
+---
 
-2]Bare Git repository created at /opt/beta.git.
-
-3]Ready for the development team to clone and push code.
-
-
-
-
-
-⚡ Bare repositories are typically used for central repos (shared by teams), since they don’t contain a working directory — only Git history.
-
-
-
-
-
+# End of Documentation

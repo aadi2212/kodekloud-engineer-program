@@ -1,120 +1,105 @@
-Git Create Branches
+# Git Create Branch – News Repo | KodeKloud Task
 
+## 📌 Task Overview
 
+The Nautilus development team required a **new branch** for implementing upcoming features while keeping the `master` branch intact.
 
-1]Nautilus developers are actively working on one of the project repositories, /usr/src/kodekloudrepos/news. Recently, they decided to implement some new features in the application, and they want to maintain those new changes in a separate branch. Below are the requirements that have been shared with the DevOps team: 
+**Repository Location:** `/usr/src/kodekloudrepos/news`
 
+**Objective:**
 
+* Create a new branch `xfusioncorp_news` from `master`
+* Do **not** modify any files
+* Ensure repository is trusted to avoid ownership-related errors
 
-On Storage server in Stratos DC create a new branch xfusioncorp\_news from master branch in /usr/src/kodekloudrepos/news git repo. 
+---
 
+## 🏁 Steps Performed
 
+### 1️⃣ Log in to Storage Server
 
-Please do not try to make any changes in the code.
+```bash
+ssh natasha@172.16.238.15
+```
 
+---
 
+### 2️⃣ Switch to Natasha User (if needed)
 
-->
-
-
-
-Steps to Create the New Branch.
-
-
-
-1]Log in to the Storage Server.
-
-&nbsp;ssh natasha@172.16.238.15
-
-
-
-2]Switch to the natasha user (if required by your environment)
-
+```bash
 sudo su - natasha
+```
 
+---
 
+### 3️⃣ Navigate to Repository
 
-3]Navigate to the repository.
-
+```bash
 cd /usr/src/kodekloudrepos/news
+```
 
+---
 
+### 4️⃣ Check Git Status and Branch
 
-4]Check the current branch (should be master)
-
+```bash
 git status
-
 git branch
+```
 
+> Error faced:
 
+```
+fatal: detected dubious ownership in repository at '/usr/src/kodekloudrepos/news'
+```
 
-But After git status I got error:
+✅ **Fix:** Mark the repository as safe
 
-fatal: detected dubious ownership in repository at '/usr/src/kodekloudrepos/news' To add an exception for this directory, call: git config --global --add safe.directory /usr/src/kodekloudrepos/news
-
-
-
-After git branch I got error:
-
-fatal: detected dubious ownership in repository at '/usr/src/kodekloudrepos/news' To add an exception for this directory, call: git config --global --add safe.directory /usr/src/kodekloudrepos/news
-
-
-
-✅ Fix for “detected dubious ownership” issue:
-
-Run the following command as the natasha user:
-
+```bash
 git config --global --add safe.directory /usr/src/kodekloudrepos/news
+```
 
+> Re-run `git status` and `git branch` to confirm no errors.
 
+---
 
-This tells Git that /usr/src/kodekloudrepos/news is a trusted repository, even if ownership doesn’t match.
+### 5️⃣ Fetch Latest Updates
 
-
-
-Then again check the status of git and git branch again.
-
-
-
-
-
-5]Fetch latest updates (safe practice).
-
+```bash
 git fetch --all
+```
 
+---
 
+### 6️⃣ Create and Switch to New Branch
 
-6]Create and switch to the new branch.
+```bash
+git checkout -b xfusioncorp_news master
+```
 
-git checkout -b xfusioncorp\_news master
+---
 
+### 7️⃣ Verify New Branch
 
-
-7]Verify the new branch
-
+```bash
 git branch
+```
 
+Expected output:
 
+```
+* xfusioncorp_news
+  master
+```
 
-You should now see:
+---
 
-\* xfusioncorp\_news
+## ✅ Key Notes
 
-&nbsp; master
+* **Do not edit any files.**
+* The task only requires creating a branch, **no push is needed** unless explicitly instructed.
+* Repository trust must be configured to avoid ownership errors.
 
+---
 
-
-
-
-✅ Key Notes:
-
-Do not edit any files.
-
-The task only requires creating a branch, not pushing it unless explicitly stated.
-
-
-
-
-
-
-
+# End of Documentation

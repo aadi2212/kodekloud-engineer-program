@@ -1,212 +1,130 @@
-Iptables Installation And Configuration
+# Iptables Installation & Apache Port Security – Stratos DC
 
+## 📌 Task Overview
 
+The security team has raised concerns that **Apache port 5002** is currently open to all traffic. To comply with security standards, a firewall must be implemented.
 
-1]We have one of our websites up and running on our Nautilus infrastructure in Stratos DC. Our security team has raised a concern that right now Apache’s port i.e 5002 is open for all since there is no firewall installed on these hosts. So we have decided to add some security layer for these hosts and after discussions and recommendations we have come up with the following requirements:
+**Objective:**
 
+* Install iptables on all app servers
+* Restrict access to Apache port 5002 only to the Load Balancer (LBR) host
+* Ensure firewall rules persist across reboots
 
+---
 
+## 🛠 Step-by-Step Execution
 
+### 1️⃣ SSH into App Servers
 
-1\. Install iptables and all its dependencies on each app host.
-
-
-
-2\. Block incoming port 5002 on all apps for everyone except for LBR host.
-
-
-
-3\. Make sure the rules remain, even after system reboot.
-
-
-
-->
-
-
-
-🔐 Task: Secure Apache Port (5002) using iptables
-
-
-
-Problem Statement
-
-
-
-Currently, Apache is running on port 5002 across application servers in Stratos DC. Since no firewall is installed, port 5002 is accessible to all.
-
-
-
-The requirement is to:
-
-
-
-1]Install iptables.
-
-2]Allow port 5002 access only from the Load Balancer (LBR) host.
-
-3]Ensure rules persist after system reboot.
-
-
-
-
-
-🛠️ Steps to Fix
-
-
-
-1\. SSH into Each App Server.
-
-
-
+```bash
 ssh tony@stapp01
-
 ssh steve@stapp02
-
 ssh banner@stapp03
+```
 
+---
 
+### 2️⃣ Install iptables
 
-
-
-2\. Install iptables
-
-
-
-On each app host:
-
-
-
+```bash
 sudo yum install -y iptables iptables-services
+sudo systemctl enable iptables
+sudo systemctl start iptables
+```
 
+---
 
+### 3️⃣ Configure Firewall Rules
 
-Enable the service:
+Flush old rules (optional but recommended):
 
-&nbsp;sudo systemctl enable iptables
+```bash
+sudo iptables -F
+```
 
-&nbsp;sudo systemctl start iptables
+Allow Apache port 5002 only from LBR host (172.16.238.14):
 
-
-
-
-
-3\. Add Firewall Rules
-
-
-
-First, flush old rules to start clean (optional, but recommended if testing):
-
-&nbsp;sudo iptables -F
-
-
-
-Allow Apache (port 5002) only from LBR host (172.16.238.14):
-
+```bash
 sudo iptables -A INPUT -p tcp -s 172.16.238.14 --dport 5002 -j ACCEPT
+```
 
+Block port 5002 from all other sources:
 
-
-Block port 5002 from everyone else:
-
+```bash
 sudo iptables -A INPUT -p tcp --dport 5002 -j DROP
+```
 
+Allow existing and related connections:
 
-
-Allow existing/related connections (best practice):
-
+```bash
 sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+```
 
+Allow loopback interface:
 
-
-Allow loopback (to avoid local issues):
-
+```bash
 sudo iptables -A INPUT -i lo -j ACCEPT
+```
 
+Allow SSH access:
 
-
-Allow SSH (port 22), so you don’t get locked out:
-
+```bash
 sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+```
 
+Set default policy to drop all other traffic:
 
-
-Deny everything else as a default policy:
-
+```bash
 sudo iptables -P INPUT DROP
+```
 
+---
 
+### 4️⃣ Persist Rules Across Reboot
 
-
-
-4\. Save Rules for Persistence
-
+```bash
 sudo service iptables save
-
-
-
-This writes rules into /etc/sysconfig/iptables, ensuring they load on reboot.
-
-
-
-Verify file:
-
 sudo cat /etc/sysconfig/iptables
+```
 
+---
 
+### 5️⃣ Verify Firewall Rules
 
-
-
-5\. Verify Rules
-
+```bash
 sudo iptables -L -n
+```
 
+**Expected Output (relevant lines):**
 
-
-
-
-Expected output (relevant lines):
-
-
-
+```
 ACCEPT     tcp  --  172.16.238.14       0.0.0.0/0            tcp dpt:5002
-
 DROP       tcp  --  0.0.0.0/0           0.0.0.0/0            tcp dpt:5002
+```
 
+---
 
+### 6️⃣ Test Access
 
+From App Server:
 
-
-6\. Test Access
-
-
-
+```bash
 curl http://172.16.238.10:5002
-
-
-
-
+```
 
 From Jump Host (should fail):
 
+```bash
+curl http://172.16.238.10:5002
+```
 
+---
 
-&nbsp;curl  http://172.16.238.10:5002
+## ✅ Final Outcome
 
+* Iptables installed and active on all app servers
+* Apache port 5002 accessible only from LBR host
+* Firewall rules persist after system reboot
+* Security compliance achieved ✅
 
-
-
-
-Final Outcome
-
-&nbsp;	• iptables installed and running on all App Servers.
-
-&nbsp;	• Apache port 5002 is accessible only from LBR host.
-
-&nbsp;	• Rules persist after reboot.
-
-&nbsp;	• Security compliance achieved. ✅
-
-
-
-
-
+# End of Documentation

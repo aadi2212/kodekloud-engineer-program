@@ -1,98 +1,85 @@
-Create a Cron Job
+# Cron Job Setup – App Servers (Stratos DC)
 
+## 📌 Task Overview
 
+The Nautilus system admins want to **test and deploy scheduled scripts** on all App Servers using cron jobs.
 
-1]The Nautilus system admins team has prepared scripts to automate several day-to-day tasks. They want them to be deployed on all app servers in Stratos DC on a set schedule. Before that they need to test similar functionality with a sample cron job. Therefore, perform the steps below:
+**Objective:**
 
+* Install `cronie` package
+* Enable and start cron daemon
+* Create a sample cron job to run every 5 minutes as root
 
+---
 
-a. Install cronie package on all Nautilus app servers and start crond service.
+## 🛠 Step-by-Step Execution
 
+### 1️⃣ Install cronie
 
+SSH into each App Server (App Server 1, 2, 3) and run:
 
-b. Add a cron \*/5 \* \* \* \* echo hello > /tmp/cron\_text for root user.
+```bash
+sudo yum install cronie -y
+```
 
+---
 
+### 2️⃣ Start & Enable crond
 
-->
+```bash
+sudo systemctl start crond
+sudo systemctl enable crond
+sudo systemctl status crond
+```
 
+* Ensure the service is **active (running)**
 
+---
 
-Step 1 – Install cronie
+### 3️⃣ Add Cron Job for Root
 
+Edit root’s crontab:
 
+```bash
+sudo crontab -e
+```
 
-SSH into each App Server (App Server 1, App Server 2, App Server 3) using the credentials provided in the task, then run:
+Add the following line at the end:
 
+```cron
+*/5 * * * * echo hello > /tmp/cron_text
+```
 
+> ⚡ Note: This will write "hello" to `/tmp/cron_text` every 5 minutes.
 
-&nbsp;sudo yum install cronie -y 
+---
 
+### 4️⃣ Verify Cron Job
 
+1. List root’s cron jobs:
 
-
-
-Step 2 – Start and Enable crond
-
-
-
-Start the cron daemon and make sure it runs on boot:
-
-
-
-&nbsp;sudo systemctl start crond
-
-
-
-&nbsp;sudo systemctl enable crond
-
-
-
-&nbsp;sudo systemctl status crond
-
-
-
-You should see it active (running).
-
-
-
-
-
-Step 3 – Add the Cron Job for Root
-
-
-
-&nbsp;sudo crontab -e
-
-
-
-
-
-Add this line at the end:
-
-\*/5 \* \* \* \* echo hello > tmp/cron\_text
-
-
-
-
-
-Step 4 – Verify the Cron Job
-
-1]List root’s cron jobs:
-
+```bash
 sudo crontab -l
+```
 
+2. Wait at least 5 minutes, then check the file:
 
+```bash
+cat /tmp/cron_text
+```
 
-2]Wait at least 5 minutes, then check if the file exists and contains hello:
+**Expected Output:**
 
-&nbsp;cat /tmp/cron\_text 
-
-
-
-You should see output- 
-
+```
 hello
+```
 
+---
 
+## ✅ Final Outcome
 
+* `cronie` installed and cron daemon running on all App Servers
+* Cron job executes every 5 minutes and writes "hello" to `/tmp/cron_text`
+* Task successfully validated ✅
+
+# End of Documentation

@@ -1,110 +1,91 @@
-Git stash
+# Git Stash – Restore stash@{1} | KodeKloud Task
 
+## 📌 Task Overview
 
+The Nautilus application development team had **stashed some in-progress changes** in the repository `/usr/src/kodekloudrepos/beta`.
 
-1]
+**Objective:**
 
-The Nautilus application development team was working on a git repository /usr/src/kodekloudrepos/beta present on Storage server in Stratos DC. One of the developers stashed some in-progress changes in this repository, but now they want to restore some of the stashed changes. Find below more details to accomplish this task:
+* Restore the stash identified as `stash@{1}`
+* Commit the restored changes
+* Push the changes to the remote repository
 
+**Repository Location:** `/usr/src/kodekloudrepos/beta`
 
+---
 
+## 🏁 Steps Performed
 
+### 1️⃣ Navigate to the Repository
 
-Look for the stashed changes under /usr/src/kodekloudrepos/beta git repository, and restore the stash with stash@{1} identifier. Further, commit and push your changes to the origin.
-
-
-
-->
-
-
-
-📘 Documentation – Restore Git Stash (stash@{1})
-
-
-
-Objective
-
-
-
-The Nautilus application development team had stashed some in-progress changes in the repository /usr/src/kodekloudrepos/beta. The requirement was to restore the stash identified as stash@{1}, commit the restored changes, and push them to the remote repository.
-
-
-
-
-
-Steps Performed:
-
-
-
-1]Navigate to the repository
-
+```bash
 cd /usr/src/kodekloudrepos/beta
+```
 
+---
 
+### 2️⃣ List Available Stashes
 
-2]List available stashes
-
+```bash
 git stash list
+```
 
-Output displayed multiple stashes, including the required stash@{1}.
+**Example Output:**
 
-
-
+```
 stash@{0}: WIP on master: 98c5590 initial commit
-
 stash@{1}: WIP on master: 98c5590 initial commit
+```
 
+> Confirmed that `stash@{1}` exists.
 
+---
 
+### 3️⃣ Apply the Stash
 
-
-3]Apply the stash
-
+```bash
 git stash apply stash@{1}
+```
 
-Restored the changes into the working directory.
+> Restored the changes into the working directory.
+> Note: The stash remains in the list because `apply` was used instead of `pop`.
 
-The stash was not deleted from the stash list (since we used apply instead of pop).
+---
 
+### 4️⃣ Verify Changes
 
-
-4]Verify changes
-
+```bash
 git status
-
 git diff
+```
 
-Confirmed that files from stash@{1} appeared as modified/added.
+> Confirmed that files from `stash@{1}` appeared as modified or added.
 
+---
 
+### 5️⃣ Stage and Commit Changes
 
-5]Stage and commit changes
-
+```bash
 git add .
-
 git commit -m "Restored changes from stash@{1}"
+```
 
+---
 
+### 6️⃣ Push Changes to Remote
 
-6]Push changes to remote
-
+```bash
 git push origin master
+```
 
+---
 
+## ✅ Final State
 
-Final State:
+1. The stash `stash@{1}` was successfully restored.
+2. Changes were committed with the message: `"Restored changes from stash@{1}"`.
+3. Remote repository is fully updated with the restored changes.
 
-1]The stash stash@{1} was successfully restored.
+---
 
-2]Changes were committed with the message:
-
-
-
-Restored changes from stash@{1}
-
-
-
-Remote repository is fully updated with these changes.
-
-
-
+# End of Documentation
