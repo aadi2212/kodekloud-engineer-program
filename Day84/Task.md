@@ -61,10 +61,3 @@ ansible-playbook -i inventory playbook.yml
 ✅ Result: The file /opt/itadmin/index.html should now exist on all application servers.
 
 
-
-
-
-
-
-[all:vars]
-ansible_ssh_common_args='-o StrictHostKeyChecking=no'
