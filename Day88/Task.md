@@ -1,36 +1,39 @@
 # 🚀 Ansible Blockinfile Module – HTTPD Web Server Setup
 
-## 📌 Task Overview
-The Nautilus DevOps team required an Ansible playbook to install and configure a simple **Apache (httpd)** web server on all application servers in the Stratos Datacenter.  
-Additionally, a sample web page needed to be deployed using Ansible’s **blockinfile** module.
+## 📌 Task Description
+The Nautilus DevOps team wants to install and configure a simple **Apache (httpd)** web server on all application servers in the Stratos Datacenter.  
+Additionally, a sample web page must be deployed using **Ansible only**, leveraging the **blockinfile** module.
 
 ---
 
-## 🎯 Objectives
-- Install **httpd** on all app servers
-- Ensure **httpd service** is running and enabled
-- Deploy a sample web page using **blockinfile**
-- Set correct **ownership and permissions**
-- Ensure playbook runs using:
-  ```bash
-  ansible-playbook -i inventory playbook.yml
+## 🎯 Task Requirements
+1. Install **httpd** on all app servers.
+2. Ensure the **httpd service** is running and enabled.
+3. Add content to `/var/www/html/index.html` using **blockinfile**.
+4. Set **owner** and **group** of the file to `apache`.
+5. Set file **permissions** to `0655`.
+6. Do **not** use custom or empty markers in `blockinfile`.
+7. Playbook must run using:
+   ```bash
+   ansible-playbook -i inventory playbook.yml
 
 
 🗂️ Directory Structure
-ansible/
+/home/thor/ansible
 ├── inventory
 └── playbook.yml
 
-
 🖥️ Inventory File
+
+Path: /home/thor/ansible/inventory
+
 stapp01 ansible_host=172.16.238.10 ansible_user=tony   ansible_ssh_pass=Ir0nM@n
 stapp02 ansible_host=172.16.238.11 ansible_user=steve  ansible_ssh_pass=Am3ric@
 stapp03 ansible_host=172.16.238.12 ansible_user=banner ansible_ssh_pass=BigGr33n
 
+🛠️ Ansible Playbook
 
-
-Ansible Playbook
-playbook.yml
+Path: /home/thor/ansible/playbook.yml
 
 ---
 - name: Install and configure httpd web server
@@ -65,43 +68,64 @@ playbook.yml
         group: apache
         mode: '0655'
 
+▶️ Execution Steps
+Step 1: Navigate to Ansible directory
+cd /home/thor/ansible
 
-
-▶️ Execution
-
-Run the playbook using:
+Step 2: Run the playbook
 ansible-playbook -i inventory playbook.yml
 
-
 ✅ Verification
-Verify content
+Verify web page content
 ansible all -i inventory -a "cat /var/www/html/index.html"
 
 
-Verify ownership & permissions
+Expected output:
+
+Welcome to XfusionCorp!
+This is Nautilus sample file, created using Ansible!
+Please do not modify this file manually!
+
+
+Note: The blockinfile module automatically adds BEGIN and END markers.
+
+Verify file ownership and permissions
 ansible all -i inventory -a "ls -l /var/www/html/index.html"
 
 
-Expected:
+Expected result:
+
 -rw-r-xr-x 1 apache apache ...
 
 
-📋 Notes
+✔ Owner: apache
+✔ Group: apache
+✔ Permissions: 0655
 
-Default markers are used by blockinfile
+📋 Validation Checklist
 
-No extra arguments are required during execution
+ httpd installed on all app servers
 
-Task passes validation successfully
+ httpd service running and enabled
 
+ index.html created using blockinfile
 
+ Correct content deployed
+
+ Correct ownership and permissions set
+
+ Playbook runs without extra arguments
+
+🧠 Key Learnings
+
+Automating package installation using Ansible
+
+Managing services with the service module
+
+Using blockinfile to safely manage file content
+
+Applying file ownership and permissions declaratively
 
 🏁 Conclusion
 
-This project demonstrates automated Apache installation and web content deployment using Ansible’s blockinfile module across multiple servers.
-
-
-
-
-
-
+This task demonstrates a complete Ansible automation workflow for configuring a web server and deploying content consistently across multiple servers.
