@@ -1,44 +1,69 @@
-# 🚀 Ansible Manage Services – Install and Configure vsftpd
+# Ansible Manage Services – vsftpd Installation
 
-## 📌 Task Description
-The Nautilus DevOps team needs to install and manage the **vsftpd (FTP) service** on all application servers in the Stratos Datacenter using Ansible.  
-This task focuses on automating package installation and service management.
+## 📘 Task Name
+**Ansible Manage Services – Install and Configure vsftpd**
 
 ---
 
-## 🎯 Requirements
-- Install **vsftpd** on all app servers
-- Start and enable **vsftpd** service
-- Use existing inventory file
-- Playbook must run using:
-  ```bash
-  ansible-playbook -i inventory playbook.yml
+## 🎯 Objective
+The Nautilus DevOps team needs to automate the installation and management of the **vsftpd (FTP)** service on all application servers in the **Stratos Datacenter** using **Ansible**.
 
-User thor must be able to run the playbook on the jump host
+---
 
+## 🖥️ Environment Details
 
-🗂️ Directory Structure
+### Jump Host
+- **User:** thor  
+- **Ansible Directory:**  
+
 /home/thor/ansible
-├── inventory
-└── playbook.yml
 
-🖥️ Inventory File
 
-Location: /home/thor/ansible/inventory
+### Inventory File
+- **Path:**  
 
+/home/thor/ansible/inventory
+
+
+---
+
+## 📌 Task Requirements
+- Install **vsftpd** on all application servers
+- Start and enable the **vsftpd** service
+- Use the existing inventory file
+- Playbook must run using:
+```bash
+ansible-playbook -i inventory playbook.yml
+
+User thor should be able to execute the playbook
+
+
+🔍 Step 1: Verify Inventory File
+
+Navigate to the Ansible directory:
+cd /home/thor/ansible
+
+
+Open the inventory file:
+vi inventory
+
+
+Inventory Content
 stapp01 ansible_host=172.16.238.10 ansible_user=tony   ansible_ssh_pass=Ir0nM@n
 stapp02 ansible_host=172.16.238.11 ansible_user=steve  ansible_ssh_pass=Am3ric@
 stapp03 ansible_host=172.16.238.12 ansible_user=banner ansible_ssh_pass=BigGr33n
 
-🛠️ Ansible Playbook
 
-Location: /home/thor/ansible/playbook.yml
+Step 2: Create Ansible Playbook
 
+Create the playbook file:
+vi playbook.yml
+
+📄 playbook.yml
 ---
 - name: Install and Configure vsftpd on App Servers
   hosts: all
   become: true
-
   tasks:
     - name: Install vsftpd package
       yum:
@@ -51,36 +76,37 @@ Location: /home/thor/ansible/playbook.yml
         state: started
         enabled: yes
 
-▶️ Execution Steps
-Step 1: Navigate to Ansible directory
-cd /home/thor/ansible
 
-Step 2: Run the playbook
+▶️ Step 3: Execute the Playbook
+
+Run the playbook using the validation command:
 ansible-playbook -i inventory playbook.yml
 
-⚠️ Observed Issue
 
+⚠️ Observed Issue (stapp03)
 During the first execution, the playbook failed on stapp03 with the following error:
-
 rc: 137
 Shared connection closed
+
 
 🔁 Resolution
 
 The playbook was re-run:
-
 ansible-playbook -i inventory playbook.yml
+
 
 Why this works
 
 Ansible is idempotent
 
-Servers that already succeeded are skipped
+Hosts that already succeeded are skipped
 
 Failed hosts are retried automatically
 
+
 ✅ Verification
-Check vsftpd service status on all servers
+
+Verify the status of the vsftpd service on all application servers:
 ansible all -i inventory -a "systemctl status vsftpd"
 
 
@@ -90,28 +116,33 @@ Service state: active (running)
 
 Service enabled on boot
 
+
 📋 Validation Checklist
 
- vsftpd installed on all app servers
+✅ vsftpd installed on all app servers
 
- vsftpd service started
+✅ vsftpd service started
 
- vsftpd service enabled
+✅ vsftpd service enabled
 
- Playbook runs without extra arguments
+✅ Playbook runs without extra arguments
 
- Executable by user thor
+✅ Executable by user thor
+
+
 
 🧠 Key Learnings
 
-Package installation using Ansible
+Automating package installation using Ansible
 
-Service management using the service module
+Managing services with the service module
 
-Importance of Ansible idempotency
+Understanding Ansible idempotency
 
-Handling transient failures in lab environments
+Handling transient failures in real-world environments
+
+
 
 🏁 Conclusion
 
-This task demonstrates how Ansible can be used to automate service installation and management across multiple servers in a reliable and repeatable way.
+This task demonstrates how Ansible can be used to reliably automate service installation and management across multiple servers while maintaining consistency and repeatability.
