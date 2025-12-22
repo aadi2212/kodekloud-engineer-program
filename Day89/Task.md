@@ -1,19 +1,20 @@
 # 🚀 Ansible Manage Services – Install and Configure vsftpd
 
-## 📌 Task Overview
-The Nautilus DevOps team required an Ansible playbook to automate the installation and management of the **vsftpd (FTP) service** on all application servers in the Stratos Datacenter.
-
-This task demonstrates how Ansible can be used to **install packages**, **manage services**, and ensure **idempotent execution** across multiple servers.
+## 📌 Task Description
+The Nautilus DevOps team needs to install and manage the **vsftpd (FTP) service** on all application servers in the Stratos Datacenter using Ansible.  
+This task focuses on automating package installation and service management.
 
 ---
 
-## 🎯 Objectives
+## 🎯 Requirements
 - Install **vsftpd** on all app servers
-- Start and enable the **vsftpd service**
-- Use an existing Ansible inventory
-- Ensure the playbook runs with:
+- Start and enable **vsftpd** service
+- Use existing inventory file
+- Playbook must run using:
   ```bash
   ansible-playbook -i inventory playbook.yml
+
+User thor must be able to run the playbook on the jump host
 
 
 🗂️ Directory Structure
@@ -21,17 +22,17 @@ This task demonstrates how Ansible can be used to **install packages**, **manage
 ├── inventory
 └── playbook.yml
 
-
 🖥️ Inventory File
-Path: /home/thor/ansible/inventory
+
+Location: /home/thor/ansible/inventory
 
 stapp01 ansible_host=172.16.238.10 ansible_user=tony   ansible_ssh_pass=Ir0nM@n
 stapp02 ansible_host=172.16.238.11 ansible_user=steve  ansible_ssh_pass=Am3ric@
 stapp03 ansible_host=172.16.238.12 ansible_user=banner ansible_ssh_pass=BigGr33n
 
+🛠️ Ansible Playbook
 
-Ansible Playbook
-Path: /home/thor/ansible/playbook.yml
+Location: /home/thor/ansible/playbook.yml
 
 ---
 - name: Install and Configure vsftpd on App Servers
@@ -50,49 +51,44 @@ Path: /home/thor/ansible/playbook.yml
         state: started
         enabled: yes
 
-
-
 ▶️ Execution Steps
 Step 1: Navigate to Ansible directory
 cd /home/thor/ansible
 
-
 Step 2: Run the playbook
 ansible-playbook -i inventory playbook.yml
 
+⚠️ Observed Issue
 
+During the first execution, the playbook failed on stapp03 with the following error:
 
-⚠️ Observed Issue and Resolution
-Issue
-During the initial execution, the playbook failed on stapp03 with the following error:
 rc: 137
 Shared connection closed
 
+🔁 Resolution
 
-Explanation
+The playbook was re-run:
 
-Exit code 137 typically indicates a resource or memory constraint on the target server.
-
-This behavior is common in lab environments.
-
-
-Resolution
-Re-running the playbook resolved the issue:
 ansible-playbook -i inventory playbook.yml
 
-✔ Ansible’s idempotency ensures already configured servers are skipped and failed hosts are retried.
+Why this works
 
+Ansible is idempotent
+
+Servers that already succeeded are skipped
+
+Failed hosts are retried automatically
 
 ✅ Verification
-Verify vsftpd service status
+Check vsftpd service status on all servers
 ansible all -i inventory -a "systemctl status vsftpd"
+
 
 Expected result:
 
 Service state: active (running)
 
-Service enabled at boot
-
+Service enabled on boot
 
 📋 Validation Checklist
 
@@ -106,26 +102,16 @@ Service enabled at boot
 
  Executable by user thor
 
+🧠 Key Learnings
 
+Package installation using Ansible
 
- 🧠 Key Learnings
+Service management using the service module
 
-Automating package installation with Ansible
+Importance of Ansible idempotency
 
-Managing services using the service module
-
-Leveraging Ansible’s idempotent behavior
-
-Handling transient failures in distributed environments
-
-
+Handling transient failures in lab environments
 
 🏁 Conclusion
 
-This project showcases a practical example of using Ansible to manage services across multiple servers, ensuring consistency, reliability, and automation best practices.
-
-
-
-
-
-
+This task demonstrates how Ansible can be used to automate service installation and management across multiple servers in a reliable and repeatable way.
