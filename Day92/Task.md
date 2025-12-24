@@ -1,79 +1,73 @@
-# Managing Jinja2 Templates Using Ansible
+# Managing Jinja2 Templates Using Ansible (HTTPD Role)
 
-## 📌 Task Overview
-One of the Nautilus DevOps team members is developing an Ansible role for **httpd installation and configuration**.  
-The requirement is to extend the role by adding a **Jinja2 template** for the `index.html` file and update the playbook to run this role on **App Server 3**.
+This project demonstrates how to manage **Jinja2 templates** using **Ansible roles** to dynamically configure an Apache (`httpd`) web server.  
+The setup installs `httpd`, deploys a dynamic `index.html` file using a Jinja2 template, and applies correct permissions and ownership on **App Server 3 (stapp03)**.
 
-The implementation must:
-- Use a dynamic template (no hardcoded server names)
-- Apply correct file permissions and ownership
-- Run successfully using:
-  ```bash
-  ansible-playbook -i inventory playbook.yml
+---
 
-🎯 Objectives
+## 🚀 Features
 
-Update the Ansible playbook to run the httpd role on stapp03
+- Uses **Ansible roles** for reusable automation
+- Dynamically generates `index.html` using **Jinja2 templates**
+- Avoids hardcoding hostnames using `inventory_hostname`
+- Sets proper file permissions and ownership
+- Validated using `ansible-playbook` command
 
-Create a Jinja2 template using inventory_hostname
+---
 
-Copy the rendered template to /var/www/html/index.html
+## 📁 Project Structure
 
-Set permissions to 0755
-
-Set owner and group to the respective sudo user of the server
-
-📂 Directory Structure
-/home/thor/ansible/
+ansible/
 ├── inventory
 ├── playbook.yml
 └── role/
-    └── httpd/
-        ├── tasks/
-        │   └── main.yml
-        └── templates/
-            └── index.html.j2
+└── httpd/
+├── tasks/
+│ └── main.yml
+└── templates/
+└── index.html.j2
 
-📝 Step 1: Create Jinja2 Template
-Navigate to templates directory
-cd /home/thor/ansible/role/httpd/templates
 
-Create template file
-vi index.html.j2
+---
 
-Template content
+## 📌 Prerequisites
+
+- Ansible installed on the control node
+- Inventory file already configured (`~/ansible/inventory`)
+- SSH access to managed nodes
+- Sudo privileges on target servers
+
+---
+
+## 🧩 Jinja2 Template
+
+**File:** `role/httpd/templates/index.html.j2`
+
+```jinja2
 This file was created using Ansible on {{ inventory_hostname }}
 
-Explanation
 
-inventory_hostname dynamically resolves the server name
+This template dynamically displays the hostname of the target server.
 
-Avoids hardcoding hostnames
+🧩 HTTPD Role Tasks
 
-Makes the role reusable across multiple servers
+File: role/httpd/tasks/main.yml
 
-🛠 Step 2: Update httpd Role Tasks
-Navigate to tasks directory
-cd /home/thor/ansible/role/httpd/tasks
-
-Edit main.yml
-vi main.yml
-
-Final main.yml
 ---
-# tasks file for httpd role
+# Tasks for httpd role
 
-- name: Install the latest version of HTTPD
+- name: Install latest version of httpd
   yum:
     name: httpd
     state: latest
 
-- name: Start httpd service
+- name: Start and enable httpd service
   service:
     name: httpd
     state: started
+    enabled: yes
 
-- name: Copy index.html template
+- name: Deploy index.html using Jinja2 template
   template:
     src: index.html.j2
     dest: /var/www/html/index.html
@@ -81,60 +75,64 @@ Final main.yml
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 
-Key Points
+🧩 Playbook Configuration
 
-Uses template module to render Jinja2 file
+File: playbook.yml
 
-ansible_user sets correct owner and group dynamically
-
-File permissions set as required
-
-▶️ Step 3: Update Playbook
-Navigate to ansible directory
-cd /home/thor/ansible
-
-Edit playbook.yml
-vi playbook.yml
-
-Playbook content
 ---
 - hosts: stapp03
   become: yes
   roles:
     - role/httpd
 
-🚀 Step 4: Execute the Playbook
+
+This playbook applies the httpd role only to App Server 3.
+
+▶️ Execution
+
+Run the playbook using:
+
 ansible-playbook -i inventory playbook.yml
 
-🔎 Step 5: Verification
-Verify file content
+✅ Verification
+Check index.html content
 ansible -i inventory stapp03 -a "cat /var/www/html/index.html"
 
-Verify ownership and permissions
-ansible -i inventory stapp03 -a "ls -l /var/www/html/index.html"
 
-✅ Expected Result
-
-File content:
+Expected output:
 
 This file was created using Ansible on stapp03
 
-
-Permissions:
-
--rwxr-xr-x
+Check permissions and ownership
+ansible -i inventory stapp03 -a "ls -l /var/www/html/index.html"
 
 
-Owner and group:
+Expected:
 
-sudo user of stapp03
+Permission: 0755
 
-🧠 Key Takeaways
+Owner & Group: respective sudo user of the server
 
-Jinja2 templates enable dynamic and reusable configurations
+🧠 Key Concepts Used
 
-Ansible roles help standardize and scale automation
+Ansible Roles
 
-Avoid hardcoding values by using built-in Ansible variables
+Jinja2 Templates
 
-Proper permissions and ownership are critical for web services
+Inventory Variables (inventory_hostname)
+
+Idempotent Configuration Management
+
+Linux File Permissions & Ownership
+
+📌 Use Case
+
+This setup is useful for:
+
+Automating web server deployments
+
+Managing dynamic configuration files
+
+Learning real-world Ansible role structure
+
+DevOps interview preparation
