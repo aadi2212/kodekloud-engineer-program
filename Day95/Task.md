@@ -146,5 +146,4 @@ Terraform
 AWS EC2
 
 AWS CLI
-```bash
-pwd
+
